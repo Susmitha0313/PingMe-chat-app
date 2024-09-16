@@ -1,0 +1,10 @@
+POST http://localhost:8000/api/users/auth
+###
+POST http://localhost:8000/api/users/
+###
+POST http://localhost:8000/api/users/logout
+###
+GET http://localhost:8000/api/users/profile
+###
+PUT http://localhost:8000/api/users/profile
+###
