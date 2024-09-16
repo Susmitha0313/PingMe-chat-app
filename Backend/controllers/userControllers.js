@@ -7,6 +7,7 @@ import User from "../models/userModel.js";
 const authUser = asyncHandler(async(req,res)=>{
     res.status(200).json({message: "Auth user"});
 });
+//sfdgsjkfbsdf
 
 
 //@sesc   Register a new user
