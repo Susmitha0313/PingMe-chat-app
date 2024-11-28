@@ -1,6 +1,15 @@
-POST http://localhost:8000/api/users/auth
+POST http://localhost:8000/api/users/login
 ###
 POST http://localhost:8000/api/users/
+Content-Type: application/json
+
+{
+    "name": "Sample",
+    "phone": "9623842834",
+    "email": "sample.xyz.com",
+    "password": "sdhnf23ih423",
+}
+
 ###
 POST http://localhost:8000/api/users/logout
 ###

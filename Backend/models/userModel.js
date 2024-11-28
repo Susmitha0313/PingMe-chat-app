@@ -18,16 +18,16 @@ const userSchema = mongoose.Schema({
     phone: {
         type: Number,
         required: true,
-    },
-    isAdmin: {
-        type: Boolean,
-        required: true,
-        default: false,
+    },   
+    picture: {
+        type: String,
+        default: "Backend/assets/default_Profile.webp",
     },
 }, {
-    timestamps: true  // Corrected spelling
+    timestamps: true  
 });
 
+//pre means before saving use this function
 userSchema.pre('save', async function(next){
     if(!this.isModified('password')){
         next();

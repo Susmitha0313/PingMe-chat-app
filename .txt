@@ -1,0 +1,6 @@
+used technologies
+
+Mongo Db Atlas - DB
+Cloudinary - Image upload
+Node JS 
+Tailwind CSS
