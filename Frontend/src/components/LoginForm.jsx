@@ -26,7 +26,11 @@ const LoginForm = ({ onToast }) => {
     setLoading(true);
     // Validate input fields
     if (!email || !password) {
-      onToast({ message: "Please fill all the fields",type: "warning", showToast: true,})
+      onToast({
+        message: "Please fill all the fields",
+        type: "warning",
+        showToast: true,
+      });
       setLoading(false);
       return;
     }
@@ -34,10 +38,12 @@ const LoginForm = ({ onToast }) => {
       const config = {
         headers: {
           "Content-type": "application/json",
-          "withCredentials":"true", //new change
+          withCredentials: "true", //new change
         },
       };
-      const { data } = await axios.post("http://localhost:8000/api/users/login",{ email, password },
+      const { data } = await axios.post(
+        "http://localhost:8000/api/users/login",
+        { email, password },
         config
       );
       localStorage.setItem("userData", JSON.stringify(data));

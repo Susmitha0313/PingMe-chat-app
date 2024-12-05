@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
-import RegisterForm from '../components/RegisterForm';
-import LoginForm from '../components/LoginForm';
-import ToastComponent from '../components/ToastComponent';
-
+import React, { useState } from "react";
+import RegisterForm from "../components/RegisterForm";
+import LoginForm from "../components/LoginForm";
+import ToastComponent from "../components/ToastComponent";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userData"));
+    if (user) {
+      navigate("/chats");
+    }
+  }, [navigate]);
+
   const [activeTab, setActiveTab] = useState("login");
-const [toast, setToast] = useState({
-  message: "",
-  type: "",
-  showToast: false,
-});
+  const [toast, setToast] = useState({
+    message: "",
+    type: "",
+    showToast: false,
+  });
   const handleToast = ({ message, type }) => {
     setToast({ message, type, showToast: true });
   };
