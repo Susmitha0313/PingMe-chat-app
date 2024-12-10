@@ -7,7 +7,8 @@ import {
     allUsers,
     logoutUser, 
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    updateProfilePic,
 } from '../controllers/userControllers.js';
 
 import { protect } from '../middleware/authMiddleware.js';
@@ -20,6 +21,7 @@ router.route('/profile')
     .get(protect, getUserProfile)
     .put(protect, updateUserProfile);
 
+router.patch("/:id/upload-profile-pic", updateProfilePic);
 
 
 

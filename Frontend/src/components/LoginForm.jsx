@@ -10,11 +10,12 @@ const Label = ({ children, isRequired }) => (
 );
 
 const LoginForm = ({ onToast }) => {
+  
   const [email, setLoginEmail] = useState("");
   const [password, setLoginPassword] = useState("");
-
   const [showLoginPassword, setshowLoginPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
 
   const toggleLPasswordVisibility = () => {

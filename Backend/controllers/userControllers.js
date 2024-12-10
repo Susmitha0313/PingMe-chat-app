@@ -2,8 +2,6 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../config/jwt.js";
 
-
-
 const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password, phone, pic } = req.body;
     if (!name || !email || !password || !phone) {
@@ -70,6 +68,44 @@ const allUsers = asyncHandler(async (req, res) => {
 })
 
 
+const updateProfilePic = asyncHandler(async (req, res) => {
+    const { profilePic } = req.body;
+    const userId = req.params.id;
+    if (!profilePic) {
+        return res.status(400).json({ message: 'Profile picture is required.' });
+    }
+    try {
+        // Update the user's `picture` field in the database
+        // const updatedUser = await User.findByIdAndUpdate(
+        //     userId,
+        //     { picture: profilePic }, // Update with the Base64 string
+        //     { new: true } // Return the updated document
+        // );
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+            folder: "user-profile-pics",
+            transformation: { width: 200, height: 200, crop: "thumb" },
+            format: "jpg",
+        });
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { picture: uploadResponse.secure_url },
+            { new: true }
+        );
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found." });
+        } else {
+            res.status(200).json({
+                message: "Profile picture updated successfully.",
+                imageUrl: uploadResponse.secure_url, // Return the updated user object
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error updating profile picture.", error });
+    }
+});
+
+
 const logoutUser = asyncHandler(async (req, res) => {
     res.cookie('jwt', "", {
         httpOnly: true,
@@ -87,7 +123,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     };
     res.status(200).json(user);
 });
- 
+
 
 const updateUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
@@ -114,5 +150,7 @@ export {
     allUsers,
     logoutUser,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    updateProfilePic,
+
 };

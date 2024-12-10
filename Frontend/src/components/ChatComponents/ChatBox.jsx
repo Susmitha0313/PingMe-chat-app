@@ -2,7 +2,7 @@ import React from 'react'
 
 const ChatBox = () => {
   return (
-    <div className="flex flex-col h-screen bg-gray-100 mt-[70px]">
+    <div className="flex flex-col h-screen bg-gray-100 mt-[59px]">
       {/* Chat header */}
 
       <div className="bg-blue-600 text-white text-lg font-semibold p-4 shadow flex items-center space-x-4">
@@ -19,7 +19,7 @@ const ChatBox = () => {
         <div>Chating person</div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto thin-scrollbar p-4 space-y-4">
         {/* Incoming message */}
         <div className="flex items-start space-x-3">
           <div className="bg-gray-300 text-gray-900 p-3 rounded-lg max-w-md">

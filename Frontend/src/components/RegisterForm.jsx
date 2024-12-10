@@ -85,9 +85,9 @@ const RegisterForm = ({ onToast }) => {
     setLoading(false);
   }
   };
-  return (
+  return (  
     <>
-      <form className="w-full bg-white p-6 rounded-lg shadow-md overflow-y-auto h-full">
+      <form className="w-full bg-white p-6 thin-scrollbar rounded-lg shadow-md overflow-y-auto h-full">
         <div className="fixed bottom-0 left-0 w-full flex flex-col items-center p-4 space-y-2 z-50"></div>
         <div className="mb-6" id="first-name">
           <Label isRequired={true} htmlFor="nickname">

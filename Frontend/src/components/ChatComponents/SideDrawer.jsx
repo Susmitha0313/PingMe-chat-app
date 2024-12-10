@@ -1,19 +1,87 @@
-import React, { useState } from "react";
-import { ChatContext } from "../../context/ChatProvider";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { ChatState } from "../../context/ChatProvider";
+
+// import { debounce } from 'lodash';
+
 const SideDrawer = () => {
-  const [state, setState] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [query, setQuery] = useState("");
+  const [filteredResult, setFilteredResult] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingChat, setLoadingChat] = useState(false);
+
   const [sidebar, setSidebar] = useState(false);
-    // const { user } = useContext(ChatContext);
+
+  const { user, setSelectedChat, chats, setChats } = ChatState();
+
+  useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching users...");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.get(
+        "http://localhost:8000/api/users",
+        config
+      );
+      console.log("Fetched Users:", data);
+      setUsers(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error Fetching users:", error.response?.data || error.message);
+      setLoading(false);
+    }
+  };
+
+  fetchUsers();
+}, []);
+
 
   const handleSidebar = () => setSidebar(!sidebar);
-  const handleSearchChange = (e) => setSearchResult(e.target.value);
+
+  const handleSearchChange = (e) => {
+    setQuery(e.target.value);
+  };
+  const filteredContacts = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(query.toLowerCase()) ||
+      user.email.toLowerCase().includes(query.toLowerCase())
+  );
+console.log(filteredContacts);
+
+  const accessChat = async (userId) => {
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(
+        "http://localhost:8000/api/chat",
+        { userId },
+        config
+      );
+      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
+
+      console.log(data);
+      setSelectedChat(data);
+      setLoading(false);
+      setSidebar(false);
+    } catch (error) {
+      console.error("Error accessing chat:", error);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex">
-      <div className="fixed top-0 left-0 z-50 ">
+      <div className="fixed m-2 z-50 ">
         <button
           onClick={handleSidebar}
           className="text-white bg-gray-800 bg-opacity-90 hover:bg-gray-800 hover:bg-opacity-60 font-medium rounded-lg text-sm px-4 py-3 dark:hover:bg-gray-700 dark:hover:bg-opacity-60 focus:outline-none"
@@ -24,7 +92,7 @@ const SideDrawer = () => {
         >
           <svg
             className="w-5 h-6 text-gray-800 dark:text-white"
-            aria-hidden="true"
+            // aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 17 14"
@@ -44,46 +112,64 @@ const SideDrawer = () => {
         {sidebar && (
           <div
             id="drawer-navigation"
-            className={`fixed top-0 left-0 z-40 h-screen p-4 overflow-y-auto transition-transform ${
-              sidebar ? "translate-x-0" : "-translate-x-full"
-            } bg-white w-64 dark:bg-gray-800`}
-            tabIndex="-1"
-            aria-labelledby="drawer-navigation-label"
+            className="fixed top-0 left-0 z-40 h-screen p-4 w-64 bg-white shadow-lg dark:bg-gray-800"
           >
-            <div className="relative mt-12">
+            {/* Search Input */}
+            <div className="relative mt-12 pt-3">
               <input
+                type="text"
+                placeholder="Search contacts..."
+                value={query}
                 onChange={handleSearchChange}
-                value={searchResult}
-                type="search"
-                id="default-search"
-                className="block w-full p-3 ps-5 text-sm text-gray-900 hover:text-gray-900 dark:hover:text-white border border-gray-300 rounded-md bg-gray-50 focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
-                placeholder="Search or start a new chat..."
-                required
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
-
-            <div className="py-4 overflow-y-auto">
-              <ul className="space-y-2 font-medium">
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            <ul className="mt-4 space-y-3 cursor-pointer">
+              {filteredContacts.length > 0 ? (
+                filteredContacts.map((contact, index) => (
+                  <li
+                    key={`${contact._id}-${index}`}
+                    onClick={() => accessChat(contact._id)}
+                    className="flex items-center p-1 bg-white-100 dark:bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 transition"
                   >
-                    <svg
-                      className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 22 21"
-                    >
-                      <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                      <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                    </svg>
-                    <span className="ms-3">Dashboard</span>
-                  </a>
+                    <img
+                      src={contact.picture}
+                      alt={contact.name}
+                      className="w-12 h-12 rounded-full object-cover mr-3"
+                    />
+                    <div>
+                      <h3 className="text-lg font-semibold">{contact.name}</h3>
+                      <p className="text-gray-600">{contact.email}</p>
+                    </div>
+                  </li>
+                ))
+              ) : (
+                <li className="text-gray-500 text-center p-3">
+                  No contacts found
                 </li>
-              </ul>
-            </div>
+              )}
+            </ul>
+            {loading && (
+              <div role="status">
+                <svg
+                  aria-hidden="true"
+                  className="inline w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                  viewBox="0 0 100 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill"
+                  />
+                </svg>
+                <span className="sr-only">Loading...</span>
+              </div>
+            )}
           </div>
         )}
       </div>

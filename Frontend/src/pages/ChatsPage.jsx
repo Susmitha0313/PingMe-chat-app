@@ -19,13 +19,13 @@ const ChatsPage = () => {
         <div className="flex w-full">
           {/* MyChats takes 1/4 of the width */}
           {user && (
-            <div className="w-1/2 border-r  overflow-y-auto">
+            <div className="w-1/2 border-r">
               <MyChats />
             </div>
           )}
           {/* ChatBox takes 3/4 of the width */}
           {user && (
-            <div className="w-3/4 overflow-y-auto">
+            <div className="w-3/4 overflow-y-auto thin-scrollbar">
               <ChatBox />
             </div>
           )}

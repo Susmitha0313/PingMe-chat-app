@@ -5,6 +5,7 @@ export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [selectedChat, setSelectedChat] = useState(null);
   const navigate = useNavigate(); // Stable, so fine to include in dependencies
 
   useEffect(() => {
@@ -16,7 +17,9 @@ export const ChatProvider = ({ children }) => {
   }, [navigate]); // Ensure the dependencies include 'user'
 
   return (
-    <ChatContext.Provider value={{ user, setUser }}>
+    <ChatContext.Provider
+      value={{ user, setUser, selectedChat, setSelectedChat }}
+    >
       {children}
     </ChatContext.Provider>
   );
