@@ -15,31 +15,31 @@ const SideDrawer = () => {
   const { user, setSelectedChat, chats, setChats } = ChatState();
 
   useEffect(() => {
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      console.log("Fetching users...");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.get(
-        "http://localhost:8000/api/users",
-        config
-      );
-      console.log("Fetched Users:", data);
-      setUsers(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error Fetching users:", error.response?.data || error.message);
-      setLoading(false);
-    }
-  };
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        const { data } = await axios.get(
+          "http://localhost:8000/api/users",
+          config
+        );
+        setUsers(data);
+        setLoading(false);
+      } catch (error) {
+        console.error(
+          "Error Fetching users:",
+          error.response?.data || error.message
+        );
+        setLoading(false);
+      }
+    };
 
-  fetchUsers();
-}, []);
-
+    fetchUsers();
+  }, []);
 
   const handleSidebar = () => setSidebar(!sidebar);
 
@@ -51,7 +51,6 @@ const SideDrawer = () => {
       user.name.toLowerCase().includes(query.toLowerCase()) ||
       user.email.toLowerCase().includes(query.toLowerCase())
   );
-console.log(filteredContacts);
 
   const accessChat = async (userId) => {
     try {
@@ -67,9 +66,10 @@ console.log(filteredContacts);
         { userId },
         config
       );
-      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
-
-      console.log(data);
+      if (!chats.find((c) => c._id === data._id)) {
+        setChats([data, ...chats]);
+      }
+      console.log("Dataaaa ", data);
       setSelectedChat(data);
       setLoading(false);
       setSidebar(false);
@@ -121,16 +121,21 @@ console.log(filteredContacts);
                 placeholder="Search contacts..."
                 value={query}
                 onChange={handleSearchChange}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 transition-colors duration-300 
+        border-gray-300 bg-gray-100 text-black 
+        placeholder-gray-500 focus:ring-blue-400
+        dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:ring-blue-500"
               />
             </div>
+
             <ul className="mt-4 space-y-3 cursor-pointer">
               {filteredContacts.length > 0 ? (
                 filteredContacts.map((contact, index) => (
                   <li
                     key={`${contact._id}-${index}`}
                     onClick={() => accessChat(contact._id)}
-                    className="flex items-center p-1 bg-white-100 dark:bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 transition"
+                    className="flex items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md shadow-sm 
+          hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300"
                   >
                     <img
                       src={contact.picture}
@@ -138,17 +143,22 @@ console.log(filteredContacts);
                       className="w-12 h-12 rounded-full object-cover mr-3"
                     />
                     <div>
-                      <h3 className="text-lg font-semibold">{contact.name}</h3>
-                      <p className="text-gray-600">{contact.email}</p>
+                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                        {contact.name}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        {contact.email}
+                      </p>
                     </div>
                   </li>
                 ))
               ) : (
-                <li className="text-gray-500 text-center p-3">
+                <li className="text-gray-500 dark:text-gray-400 text-center p-3">
                   No contacts found
                 </li>
               )}
             </ul>
+
             {loading && (
               <div role="status">
                 <svg

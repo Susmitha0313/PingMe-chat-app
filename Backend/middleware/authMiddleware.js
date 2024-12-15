@@ -12,16 +12,13 @@ const protect = asyncHandler(async (req, res, next) => {
         req.headers.authorization.startsWith("Bearer")
     ) {
         token = req.headers.authorization.split(" ")[1]; //splits into array and takes the second ..it is body
-        console.log("token in header", token);
     } else if (req.cookies.jwt) {
         token = req.cookies.jwt;
-        console.log("token in cookie", token);
     }
     if (!token) {
         res.status(401);
         throw new Error("Not authorize")
     }
-
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = await User.findById(decoded.id).select("-password");

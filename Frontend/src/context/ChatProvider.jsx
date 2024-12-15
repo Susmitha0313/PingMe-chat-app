@@ -5,6 +5,7 @@ export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const navigate = useNavigate(); // Stable, so fine to include in dependencies
 
@@ -18,7 +19,7 @@ export const ChatProvider = ({ children }) => {
 
   return (
     <ChatContext.Provider
-      value={{ user, setUser, selectedChat, setSelectedChat }}
+      value={{ user, setUser,chats,setChats, selectedChat, setSelectedChat }}
     >
       {children}
     </ChatContext.Provider>

@@ -19,17 +19,28 @@ const HomePage = () => {
   const [toast, setToast] = useState({
     message: "",
     type: "",
-    showToast: false,
+    showToast: false,   
   });
   const handleToast = ({ message, type }) => {
     setToast({ message, type, showToast: true });
   };
   const handleToastClose = () => {
     setToast((prev) => ({ ...prev, showToast: false }));
-  };
+  };  
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
+    <div
+      style={{
+        backgroundImage: `url(${"src/assets/bearWallpaper.jpeg"})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        height: "100vh", // Full viewport height
+        display: "flex",
+        flexDirection: "column",
+      }}
+      className=" container mx-auto flex flex-col items-center justify-center min-h-screen p-4"
+    >
       {toast.showToast && (
         <ToastComponent
           message={toast.message}
@@ -38,7 +49,11 @@ const HomePage = () => {
           onClose={handleToastClose}
         />
       )}
-      <h1 className="text-3xl font-bold mb-6 text-center">Welcome to PingMe</h1>
+
+      <h1 className="text-3xl font-bold mb-6 bg-slate-100 p-2 text-center">
+        Welcome to PingMe
+      </h1>
+
       <div className="w-full max-w-md">
         <ul
           className="flex justify-around px-1.5 py-1.5 list-none rounded-md bg-slate-100 shadow-sm"
