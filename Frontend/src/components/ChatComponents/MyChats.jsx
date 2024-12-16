@@ -1,14 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
+import socket from "../../../Utility/socket";
+
 
 const MyChats = () => {
-  const [chats, setChats] = useState([]);
-  const [loggedUser, setLoggerUser] = useState();
+  const [chats, setChats] = useState([]); // Holds the chats
+  const [loggedUser, setLoggerUser] = useState(); // Logged-in user
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
+  console.log(notification);
+  
+const unreadCounts = () => {
+  return notification.reduce((acc, msg) => {
+    acc[msg.chat._id] = (acc[msg.chat._id] || 0) + 1; // Increment count for the corresponding chat
+    return acc;
+  }, {});
+};
 
+  let count = unreadCounts();
+
+  // Fetch Chats
   useEffect(() => {
     const fetchChats = async () => {
       if (!user) return;
@@ -19,20 +32,43 @@ const MyChats = () => {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(
-          "http://localhost:8000/api/chat",
-          config
-        );
+        const { data } = await axios.get(`${ENDPOINT}/api/chat`, config);
+
         setChats(data);
-        setLoggerUser(data);
+        setLoggerUser(user);
       } catch (err) {
         setError("Failed to load chats. Please try again.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchChats();
   }, [user]);
+
+  // Listen for "message received" and update chats
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("message received", (newMsgReceived) => {
+      updateChatsWithNewMessage(newMsgReceived);
+    });
+
+    return () => socket.off("message received");
+  }, [chats]);
+
+  // Function to update chats state when a new message is received
+  const updateChatsWithNewMessage = (newMsgReceived) => {
+    setChats((prevChats) => {
+      return prevChats.map((chat) => {
+        if (chat._id === newMsgReceived.chat._id) {
+          // Update the chat with the new message
+          return { ...chat, latestMessage: newMsgReceived };
+        }
+        return chat;
+      });
+    });
+  };
 
   const getSender = (loggedUser, users) => {
     return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
@@ -41,6 +77,7 @@ const MyChats = () => {
   const newGroup = () => {
     console.log("createGroup");
   };
+
   return (
     <div className="h-screen flex flex-col bg-white dark:bg-gray-900 mt-12 p-4">
       {/* Header */}
@@ -58,22 +95,26 @@ const MyChats = () => {
             rounded-full text-sm p-2.5 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
               <svg
+                className="w-6 h-6 text-gray-800 dark:text-white"
+                aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
+                width="24"
+                height="24"
                 fill="currentColor"
-                className="w-5 h-5"
+                viewBox="0 0 24 24"
               >
-                <path d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM1.49 15.326a.78.78 0 0 1-.358-.442 3 3 0 0 1 4.308-3.516 6.484 6.484 0 0 0-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 0 1-2.07-.655ZM16.44 15.98a4.97 4.97 0 0 0 2.07-.654.78.78 0 0 0 .357-.442 3 3 0 0 0-4.308-3.517 6.484 6.484 0 0 1 1.907 3.96 2.32 2.32 0 0 1-.026.654ZM18 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM5.304 16.19a.844.844 0 0 1-.277-.71 5 5 0 0 1 9.947 0 .843.843 0 0 1-.277.71A6.975 6.975 0 0 1 10 18a6.974 6.974 0 0 1-4.696-1.81Z" />
+                <path
+                  fillRule="evenodd"
+                  d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
-            <span className="absolute left-1/2 -translate-x-1/2 top-10 whitespace-nowrap bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              New Group Chat
-            </span>
           </div>
         </div>
       </div>
 
-      {/* Chat List or Loading/Error States */}
+      {/* Chat List */}
       {loading ? (
         <div className="text-center text-gray-500 dark:text-gray-400">
           Loading chats...
@@ -87,9 +128,9 @@ const MyChats = () => {
               key={chat._id}
               onClick={() => setSelectedChat(chat)}
               className={`flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 
-            hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors duration-300 ${
-              selectedChat?._id === chat._id && "bg-gray-200 dark:bg-gray-700"
-            }`}
+              hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors duration-300 ${
+                selectedChat?._id === chat._id && "bg-gray-200 dark:bg-gray-700"
+              }`}
             >
               <div>
                 <p className="text-md font-semibold text-gray-800 dark:text-white">
@@ -100,6 +141,11 @@ const MyChats = () => {
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {chat.latestMessage?.content || "No messages yet."}
                 </p>
+              </div>
+              <div className="flex item-center gap-2">
+                {count[chat._id] > 0 && (<span className="text-xs font-bold text-white bg-red-600 reounded-full w-6 h-6 item-center justify-center ">
+                {count[chat._id]}
+                </span>)}
               </div>
               <span className="text-xs text-gray-400 dark:text-gray-500">
                 {new Date(chat.updatedAt).toLocaleString()}

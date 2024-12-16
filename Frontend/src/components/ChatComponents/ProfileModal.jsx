@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import Cropper from "react-easy-crop";
-import getCroppedImg from "../../../Utility.js/cropImage";
+import getCroppedImg from "../../../Utility/cropImage";
 import axios from "axios";
 // import dotenv from "dotenv";
 // dotenv.config({ path: '../.env' });

@@ -1,38 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
-import { io } from "socket.io-client";
+import socket from "../../../Utility/socket";
 
-const ENDPOINT = "http://localhost:8000";
-var socket, selectedChatCompare;
 
 const ChatBox = () => {
-  const { user, selectedChat } = ChatState();
+  const { user, selectedChat, notification, setNotification } = ChatState();
   const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
   const [error, setError] = useState(null);
-  const [cocketCncted, setSocketCncted] = useState(false);
-
+  const [socketConnected, setSocketConnected] = useState(false);
+  const messageEndRef = useRef(null);
+  
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behaviour: "smooth" });
+  };
+  // Initialize socket and set up listeners
   useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", user);
-    socket.on("connection", () => setSocketCncted(true));
-  }, []);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
 
+    return () => socket.disconnect(); // Cleanup on component unmount
+  }, [user]);
+
+  // Join the selected chat's room
   const joinRoom = (roomId) => {
+    if (!roomId) return;
     socket.emit("join chat", roomId);
-
-    socket.on("user joined", (room) => {
-      console.log(`A user joined room: ${room}`);
-    });
   };
 
-  const TypingHandler = (e) => {
-    setNewMsg(e.target.value);
-    // Optional: Typing indicator logic here
-  };
-
+  // Fetch chat messages when a chat is selected
   useEffect(() => {
     const fetchMessages = async () => {
       if (!user || !selectedChat) return;
@@ -49,10 +50,9 @@ const ChatBox = () => {
           config
         );
         setMessages(data);
-        setLoading(false);
         joinRoom(selectedChat._id);
-      } catch (error) {
-        console.error("Error loading messages:", error);
+      } catch (err) {
+        console.error("Error loading messages:", err);
         setError("Failed to load messages. Please try again.");
       } finally {
         setLoading(false);
@@ -60,13 +60,14 @@ const ChatBox = () => {
     };
 
     fetchMessages();
-
-    selectedChatCompare = selectedChat;
+    // selectedChatCompare = selectedChat;
   }, [selectedChat, user]);
 
+  // Handle message sending
   const sendMessage = async () => {
     if (!newMsg.trim()) return;
     try {
+      socket.emit("stop typing", selectedChat._id);
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -78,28 +79,64 @@ const ChatBox = () => {
         { content: newMsg, chatId: selectedChat._id },
         config
       );
+      setMessages((prevMessages) => [...prevMessages, data]);
       socket.emit("new message", data);
-      setMessages((prev) => [...prev, data]);
-    } catch (error) {
-      console.error("Error sending message:", error);
+    } catch (err) {
+      console.error("Error sending message:", err);
       setError("Failed to send message. Please try again.");
     } finally {
       setNewMsg("");
     }
   };
 
+  // Receive real-time messages
   useEffect(() => {
     socket.on("message received", (newMsgReceived) => {
       if (
-        !selectedChatCompare ||
-        selectedChatCompare._id !== newMsgReceived.chat._id
+        !selectedChat ||
+        selectedChat._id !== newMsgReceived.chat._id
       ) {
-        //give notification
+        if (!notification.find((msg) => msg._id === newMsgReceived._id)) {
+          setNotification((prev) => [...prev, newMsgReceived]);
+        }
       } else {
-        setMessages([...messages, newMsgReceived]);
+        setMessages((prevMessages) => [...prevMessages, newMsgReceived]);
       }
+      console.log("Notifictn:"+ notification)
     });
-  });
+    return () => {
+    socket.off("message received")
+    }
+  }, [selectedChat, notification, setMessages, setNotification]);
+
+
+  
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  
+  // Typing indicator handler
+  const TypingHandler = (e) => {
+    setNewMsg(e.target.value);
+    if (!socketConnected) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
+    }
+
+    const lastTypingTime = new Date().getTime();
+    const typingTimeout = 2000;
+
+    setTimeout(() => {
+      const timeNow = new Date().getTime();
+      const timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= typingTimeout) {
+        socket.emit("stop typing", selectedChat._id);
+        setTyping(false);
+      }
+    }, typingTimeout);
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") sendMessage();
@@ -177,7 +214,28 @@ const ChatBox = () => {
             No messages yet. Start a conversation!
           </div>
         )}
+        <div ref={messageEndRef} />
       </div>
+
+      {/* Typing Indicator */}
+      {isTyping && (
+        <div className="flex items-center space-x-2 ml-4">
+          <div className="flex items-center space-x-1">
+            <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-bounce dark:bg-blue-300"></div>
+            <div
+              className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-bounce dark:bg-blue-300"
+              style={{ animationDelay: "0.2s" }}
+            ></div>
+            <div
+              className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-bounce dark:bg-blue-300"
+              style={{ animationDelay: "0.4s" }}
+            ></div>
+          </div>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Typing...
+          </span>
+        </div>
+      )}
 
       {/* Chat Input */}
       <div className="bg-white dark:bg-gray-800 p-4 border-t border-gray-200 dark:border-gray-700">

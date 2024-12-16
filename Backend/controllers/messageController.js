@@ -9,6 +9,7 @@ const sendMessage = asyncHandler(async (req, res) => {
         console.log("Invalid data passed into request");
         return res.sendStatus(400);
     }
+    console.log("userID", req.user._id, content);
     var newMessage = {
         sender: req.user._id,
         content: content,
@@ -26,6 +27,7 @@ const sendMessage = asyncHandler(async (req, res) => {
         await Chat.findByIdAndUpdate(req.body.chatId, {
             latestMessage: message,
         })
+      
         res.json(message) //error in here 
     } catch (error) {
         res.status(400);
@@ -48,4 +50,15 @@ const allMessages = asyncHandler(async (req, res) => {
     }
 })
 
-export { sendMessage, allMessages }
+
+const getNotification = asyncHandler(async(req,res)=>{
+try{
+    const notification = await Message.find({ sender: req.params.userId });
+    console.log(notification);
+    res.status(200).json(notification);
+} catch (error) {
+    res.status(500).json({ error: "Failed to fetch notification" });
+    }
+})
+
+export { sendMessage, allMessages, getNotification }  
