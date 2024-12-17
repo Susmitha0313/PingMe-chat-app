@@ -1,4 +1,5 @@
 import express from "express";
+import path from 'path';
 import dotenv from 'dotenv';
 dotenv.config({ path: '../.env' });
 import cors from "cors";
@@ -9,7 +10,6 @@ import messageRoutes from './routes/messageRoutes.js';
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 import { Server as SocketServer } from "socket.io";
-
 
 connectDB();
 
@@ -46,19 +46,21 @@ app.use('/api/messages', messageRoutes);
 
 //---------------Deployment-------------
 
-// const __dirname1 = path.resolve();
-// if (process.env.NODE_ENV === "production") {
-// app.use(express.static(path.join(__dirname1, "/Frontend/build")))
-// } else {
-//     app.get("/", (req, res) => {
-    
-//         res.send("API is running successfully");
-// })
-// }
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname1, "/Frontend/build")))
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname1, "Frontend", "build", "index.html"));
+    });
+} else {
+    app.get("/", (req, res) => {
+        res.send("API is running successfully");
+    });
+}
 //---------------Deployment-------------
 
 app.use(notFound);
-app.use(errorHandler);
+app.use(errorHandler); 
 
 
 app.get('/', (req, res) => {
@@ -78,8 +80,8 @@ const io = new SocketServer(server, {
 io.on("connection", (socket) => {
     console.log("connected to socket.io");
 
-    
-    
+
+
     socket.on('setup', (userData) => {
         socket.join(userData._id);
         socket.emit("connected");
@@ -87,11 +89,11 @@ io.on("connection", (socket) => {
 
     socket.on('join chat', (room) => {
         socket.join(room);
-    }) 
-    
+    })
+
     socket.on("typing", (room) => socket.in(room).emit("typing"));
     socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
-    
+
     socket.on("new message", (newmsgReceived) => {
         let chat = newmsgReceived.chat;
         if (!chat.users) return console.log("chat.users not defined");
@@ -100,7 +102,7 @@ io.on("connection", (socket) => {
             socket.in(user._id).emit("message received", newmsgReceived)
         })
     })
-    socket.off("setup",()=>{
+    socket.off("setup", () => {
         socket.leave(userData._id);
     })
 });
