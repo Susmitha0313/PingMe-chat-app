@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run Backend\" \"npm run Frontend\"",
-    "Backend": "cd Backend && npm start",
-    "Frontend": "cd Frontend && npm run dev"
+    "start": "node Backend/server.js",
+    "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend",
+    "server":"nodemon Backend/server.js",
+    "Backend-dev": "cd Backend && npm start",
+    "Frontend-dev": "cd Frontend && npm run dev",
+    "dev":"concurrently \"npm run Backend-dev\" \"npm run Frontend-dev\""
   },
-  "keywords": [],
+  "keywords": [],  
   "author": "",
   "license": "ISC",
   "description": "",

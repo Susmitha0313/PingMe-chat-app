@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
 import socket from "../../../Utility/socket";
@@ -9,17 +9,18 @@ const MyChats = () => {
   const [loggedUser, setLoggerUser] = useState(); // Logged-in user
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } =
+    ChatState();
   console.log(notification);
-  
-const unreadCounts = () => {
+
+const unreadCounts = useMemo(() => {
   return notification.reduce((acc, msg) => {
-    acc[msg.chat._id] = (acc[msg.chat._id] || 0) + 1; // Increment count for the corresponding chat
+    acc[msg.chat._id] = (acc[msg.chat._id] || 0) + 1;
     return acc;
   }, {});
-};
+}, [notification]);
 
-  let count = unreadCounts();
+  let count = unreadCounts;
 
   // Fetch Chats
   useEffect(() => {
@@ -49,24 +50,26 @@ const unreadCounts = () => {
   // Listen for "message received" and update chats
   useEffect(() => {
     if (!socket) return;
+    socket.on("message received", updateChatsWithNewMessage);
 
-    socket.on("message received", (newMsgReceived) => {
-      updateChatsWithNewMessage(newMsgReceived);
-    });
-
-    return () => socket.off("message received");
-  }, [chats]);
+    return () => socket.off("message received", updateChatsWithNewMessage);
+  }, [chats]); // Include `updateChatsWithNewMessage` if declared inside the component
 
   // Function to update chats state when a new message is received
   const updateChatsWithNewMessage = (newMsgReceived) => {
     setChats((prevChats) => {
-      return prevChats.map((chat) => {
-        if (chat._id === newMsgReceived.chat._id) {
-          // Update the chat with the new message
-          return { ...chat, latestMessage: newMsgReceived };
-        }
-        return chat;
-      });
+      const chatExists = prevChats.some(
+        (chat) => chat._id === newMsgReceived.chat._id
+      );
+      if (chatExists) {
+        return prevChats.map((chat) =>
+          chat._id === newMsgReceived.chat._id
+            ? { ...chat, latestMessage: newMsgReceived }
+            : chat
+        );
+      } else {
+        return [...prevChats, newMsgReceived.chat];
+      }
     });
   };
 
@@ -143,12 +146,16 @@ const unreadCounts = () => {
                 </p>
               </div>
               <div className="flex item-center gap-2">
-                {count[chat._id] > 0 && (<span className="text-xs font-bold text-white bg-red-600 reounded-full w-6 h-6 item-center justify-center ">
-                {count[chat._id]}
-                </span>)}
+                {count[chat._id] > 0 && (
+                  <span className="text-xs font-bold text-white bg-red-600 reounded-full w-6 h-6 item-center justify-center ">
+                    {count[chat._id] || 0}
+                  </span>
+                )}
               </div>
               <span className="text-xs text-gray-400 dark:text-gray-500">
-                {new Date(chat.updatedAt).toLocaleString()}
+                {chat.updatedAt
+                  ? new Date(chat.updatedAt).toLocaleString()
+                  : "N/A"}
               </span>
             </li>
           ))}
