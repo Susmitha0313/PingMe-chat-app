@@ -16,7 +16,7 @@ const { user, selectedChat } = ChatState();
       <ChatHeader />
       <div>
         {user && <SideDrawer />}
-        <div className="flex w-full">
+        <div className="flex fixed w-full">
           {user && (
             <div className="w-1/2 border-r">
               <MyChats />

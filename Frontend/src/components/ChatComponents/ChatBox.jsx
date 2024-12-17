@@ -143,8 +143,9 @@ const ChatBox = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900 mt-[59px]">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
       {/* Chat Header */}
+      <div className="mt-[59px] bg-blue-600"></div>
       <div className="bg-blue-600 text-white text-lg font-semibold p-4 shadow flex items-center space-x-4">
         <div className="relative w-10 h-10 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-full">
           <img
@@ -164,7 +165,19 @@ const ChatBox = () => {
       </div>
 
       {/* Messages Section */}
-      <div className="flex-1 overflow-y-auto thin-scrollbar p-4 space-y-4">
+      <div
+        style={{
+          backgroundImage: `url(${"/src/assets/wpapergray.png"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          height: "100vh", // Full viewport height
+          display: "flex",
+          flexDirection: "column",
+        }}
+        className=" container mx-auto flex-1 overflow-y-auto thin-scrollbar space-y-4 justify-center p-4"
+        // className="flex-1 overflow-y-auto thin-scrollbar p-4 space-y-4"
+      >
         {loading ? (
           <div className="text-center text-gray-500 dark:text-gray-400">
             Loading messages...

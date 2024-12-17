@@ -44,13 +44,14 @@ app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/messages', messageRoutes);
 
-//---------------Deployment-------------
+//---------------Deployment-------------    
 
 const __dirname1 = path.resolve();
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname1, "/Frontend/build")))
+    app.use(express.static(path.join(__dirname1, "/Frontend/dist")))
+    app.use(express.static(path.join(__dirname1, 'public')));
     app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname1, "Frontend", "build", "index.html"));
+        res.sendFile(path.resolve(__dirname1, "Frontend", "dist", "index.html"));
     });
 } else {
     app.get("/", (req, res) => {
