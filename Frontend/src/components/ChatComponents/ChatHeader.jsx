@@ -36,7 +36,7 @@ const ChatHeader = () => {
             {/* Logo */}
             <a href="https://flowbite.com" className="flex items-center">
               <img
-                src="https://flowbite.com/docs/images/logo.svg"
+                src="/src/assets/output-onlinepngtools.png"
                 className="mr-3 h-8 sm:h-9"
                 alt="Flowbite Logo"
               />

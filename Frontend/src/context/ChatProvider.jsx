@@ -8,15 +8,15 @@ export const ChatProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [notification, setNotification] = useState([]);
-  const navigate = useNavigate(); // Stable, so fine to include in dependencies
+  const navigate = useNavigate(); 
 
-  useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userData"));
-    setUser(userInfo);
-    if (!userInfo) {
-      navigate("/"); // Redirect only if userInfo doesn't exist
-    }
-  }, [navigate]); // Ensure the dependencies include 'user'
+useEffect(() => {
+  const userInfo = JSON.parse(localStorage.getItem("userData"));
+  setUser(userInfo);
+  if (!userInfo) {
+    navigate("/");
+  }
+}, [navigate]);
 
   return (
     <ChatContext.Provider

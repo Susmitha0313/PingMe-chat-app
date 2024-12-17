@@ -7,7 +7,6 @@ import { ChatState } from "../../context/ChatProvider";
 const SideDrawer = () => {
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
-  const [filteredResult, setFilteredResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [sidebar, setSidebar] = useState(false);
@@ -84,26 +83,20 @@ const SideDrawer = () => {
       <div className="fixed m-2 z-50 ">
         <button
           onClick={handleSidebar}
-          className="text-white bg-gray-800 bg-opacity-90 hover:bg-gray-800 hover:bg-opacity-60 font-medium rounded-lg text-sm px-4 py-3 dark:hover:bg-gray-700 dark:hover:bg-opacity-60 focus:outline-none"
-          type="button"
-          data-drawer-target="drawer-navigation"
-          data-drawer-show="drawer-navigation"
-          aria-controls="drawer-navigation"
+          className={`text-white bg-blue-600 hover:bg-blue-700  focus:outline-none ${
+            sidebar &&
+            "focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-800"
+          } font-medium 
+            rounded-full text-sm p-2.5 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 `}
         >
           <svg
-            className="w-5 h-6 text-gray-800 dark:text-white"
-            // aria-hidden="true"
+            className="w-6 h-6 text-white-800 dark:text-white"
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 17 14"
+            fill="currentColor"
+            viewBox="0 0 20 22"
           >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 1h15M1 7h15M1 13h15"
-            />
+            <path d="M16 0H4a2 2 0 0 0-2 2v1H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM13.929 17H7.071a.5.5 0 0 1-.5-.5 3.935 3.935 0 1 1 7.858 0 .5.5 0 0 1-.5.5Z" />
           </svg>
         </button>
       </div>
@@ -112,10 +105,11 @@ const SideDrawer = () => {
         {sidebar && (
           <div
             id="drawer-navigation"
-            className="fixed top-0 left-0 z-40 h-screen p-4 w-64 bg-white shadow-lg dark:bg-gray-800"
+            className="fixed inset-0 top-0 left-0 z-40 h-screen p-4 w-64 bg-white shadow-lg dark:bg-gray-800"
+            // fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50
           >
             {/* Search Input */}
-            <div className="relative mt-12 pt-3">
+            <div className="relative mt-[59px] pt-3">
               <input
                 type="text"
                 placeholder="Search contacts..."
@@ -128,13 +122,13 @@ const SideDrawer = () => {
               />
             </div>
 
-            <ul className="mt-4 space-y-3 cursor-pointer">
+            <ul className="mt-4 overflow-y-auto thin-scrollbar space-y-3 ">
               {filteredContacts.length > 0 ? (
                 filteredContacts.map((contact, index) => (
                   <li
                     key={`${contact._id}-${index}`}
                     onClick={() => accessChat(contact._id)}
-                    className="flex items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md shadow-sm 
+                    className="flex items-center cursor-pointer p-2 bg-gray-100 dark:bg-gray-700 rounded-md shadow-sm 
           hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300"
                   >
                     <img

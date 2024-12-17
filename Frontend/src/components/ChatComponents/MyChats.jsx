@@ -3,24 +3,20 @@ import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
 import socket from "../../../Utility/socket";
 
-
+const ENDPOINT = "http://localhost:8000";
 const MyChats = () => {
   const [chats, setChats] = useState([]); // Holds the chats
   const [loggedUser, setLoggerUser] = useState(); // Logged-in user
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user, selectedChat, setSelectedChat, notification, setNotification } =
-    ChatState();
-  console.log(notification);
+  const { user, selectedChat, setSelectedChat, notification } = ChatState();
 
-const unreadCounts = useMemo(() => {
-  return notification.reduce((acc, msg) => {
-    acc[msg.chat._id] = (acc[msg.chat._id] || 0) + 1;
-    return acc;
-  }, {});
-}, [notification]);
-
-  let count = unreadCounts;
+  const unreadCounts = useMemo(() => {
+    return notification.reduce((acc, msg) => {
+      acc[msg.chat._id] = (acc[msg.chat._id] || 0) + 1;
+      return acc;
+    }, {});
+  }, [notification]);
 
   // Fetch Chats
   useEffect(() => {
@@ -47,31 +43,33 @@ const unreadCounts = useMemo(() => {
     fetchChats();
   }, [user]);
 
-  // Listen for "message received" and update chats
+  // Listen for "message received"
   useEffect(() => {
     if (!socket) return;
+
+    const updateChatsWithNewMessage = (newMsgReceived) => {
+      setChats((prevChats) => {
+        const chatExists = prevChats.some(
+          (chat) => chat._id === newMsgReceived.chat._id
+        );
+        if (chatExists) {
+          return prevChats.map((chat) =>
+            chat._id === newMsgReceived.chat._id
+              ? { ...chat, latestMessage: newMsgReceived }
+              : chat
+          );
+        } else {
+          return [...prevChats, newMsgReceived.chat];
+        }
+      });
+    };
+
     socket.on("message received", updateChatsWithNewMessage);
 
     return () => socket.off("message received", updateChatsWithNewMessage);
-  }, [chats]); // Include `updateChatsWithNewMessage` if declared inside the component
+  }, []); // Empty dependencies
 
-  // Function to update chats state when a new message is received
-  const updateChatsWithNewMessage = (newMsgReceived) => {
-    setChats((prevChats) => {
-      const chatExists = prevChats.some(
-        (chat) => chat._id === newMsgReceived.chat._id
-      );
-      if (chatExists) {
-        return prevChats.map((chat) =>
-          chat._id === newMsgReceived.chat._id
-            ? { ...chat, latestMessage: newMsgReceived }
-            : chat
-        );
-      } else {
-        return [...prevChats, newMsgReceived.chat];
-      }
-    });
-  };
+  
 
   const getSender = (loggedUser, users) => {
     return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
@@ -82,7 +80,7 @@ const unreadCounts = useMemo(() => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-gray-900 mt-12 p-4">
+    <div className="h-screen mt-[59px]  flex flex-col bg-white dark:bg-gray-900  p-4">
       {/* Header */}
       <div className="flex justify-between mt-3 items-center">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white">
@@ -91,14 +89,14 @@ const unreadCounts = useMemo(() => {
         <div className="flex items-center space-x-2">
           {/* New Group Chat Button */}
           <div className="relative group">
-            <button
+            {/* <button
               onClick={newGroup}
               type="button"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium 
+              className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium 
             rounded-full text-sm p-2.5 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6 text-white-800 dark:text-white"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -112,7 +110,7 @@ const unreadCounts = useMemo(() => {
                   clipRule="evenodd"
                 />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -125,7 +123,7 @@ const unreadCounts = useMemo(() => {
       ) : error ? (
         <div className="text-red-500 text-center">{error}</div>
       ) : chats.length > 0 ? (
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-4 overflow-y-auto thin-scrollbar space-y-3">
           {chats.map((chat) => (
             <li
               key={chat._id}
@@ -146,9 +144,9 @@ const unreadCounts = useMemo(() => {
                 </p>
               </div>
               <div className="flex item-center gap-2">
-                {count[chat._id] > 0 && (
-                  <span className="text-xs font-bold text-white bg-red-600 reounded-full w-6 h-6 item-center justify-center ">
-                    {count[chat._id] || 0}
+                {unreadCounts[chat._id] > 0 && (
+                  <span className="text-xs font-bold text-white bg-red-600 rounded-full w-6 h-6 item-center justify-center ">
+                    {unreadCounts[chat._id] || 0}
                   </span>
                 )}
               </div>
