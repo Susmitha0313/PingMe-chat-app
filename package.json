@@ -4,13 +4,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node Backend/server.js",
-    "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend",
-    "server":"nodemon Backend/server.js",
+    "build": "npm install --prefix Frontend && npm --prefix Frontend run build",
+    "server": "nodemon Backend/server.js",
     "Backend-dev": "cd Backend && npm start",
     "Frontend-dev": "cd Frontend && npm run dev",
-    "dev":"concurrently \"npm run Backend-dev\" \"npm run Frontend-dev\""
+    "dev": "concurrently \"npm run Backend-dev\" \"npm run Frontend-dev\""
   },
-  "keywords": [],  
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
