@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ChatState } from "../context/ChatProvider";
 
 const Label = ({ children, isRequired }) => (
   <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -9,14 +10,17 @@ const Label = ({ children, isRequired }) => (
   </label>
 );
 
+
 const LoginForm = ({ onToast }) => {
-  
   const [email, setLoginEmail] = useState("");
   const [password, setLoginPassword] = useState("");
   const [showLoginPassword, setshowLoginPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { url } = ChatState();
+
   
   const navigate = useNavigate();
+
 
   const toggleLPasswordVisibility = () => {
     setshowLoginPassword((prev) => !prev);
@@ -34,7 +38,7 @@ const LoginForm = ({ onToast }) => {
       });
       setLoading(false);
       return;
-    }
+    }    
     try {
       const config = {
         headers: {
@@ -43,7 +47,7 @@ const LoginForm = ({ onToast }) => {
         },
       };
       const { data } = await axios.post(
-        "http://localhost:8000/api/users/login",
+        url + "/api/users/login",
         { email, password },
         config
       );
