@@ -24,9 +24,9 @@ const ChatHeader = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!user) {
-    return <div>Loading...</div>; // This can safely be here now
-  }
+  // if (!user) {
+  //   return <div>Loading...</div>; // This can safely be here now
+  // }
 
   return (
     <>
@@ -34,7 +34,6 @@ const ChatHeader = () => {
         <nav className="border-gray-200 px-4 lg:px-6 py-2.5">
           <div className="flex flex-wrap ml-10 items-center justify-between mx-auto max-w-screen-xl">
             {/* Logo */}
-            <a href="https://flowbite.com" className="flex items-center">
               <img
                 src="/src/assets/output-onlinepngtools.png"
                 className="mr-3 h-8 sm:h-9"
@@ -43,7 +42,6 @@ const ChatHeader = () => {
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
                 PingMe
               </span>
-            </a>
             {/* Dropdown and user profile */}
             <ul className="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
               <li ref={menuRef}>
@@ -63,7 +61,7 @@ const ChatHeader = () => {
                 </button>
 
                 {/* Dropdown Menu */}
-                {menu && (
+                {user && menu && (
                   <div className="absolute z-10 mt-6 grid w-auto text-md bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
                     <div className="p-2 pb-0 text-gray-900 md:pb-3 dark:text-white">
                       <ul className="space-y-3">
@@ -93,22 +91,25 @@ const ChatHeader = () => {
                 <input type="checkbox" value="" className="sr-only peer" />
                 <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
               </li>
-              <li>
-                <button onClick={() => setModal((prev) => !prev)}>
-                  <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                    <img
-                      src={user.picture}
-                      alt="User Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </button>
-              </li>
+              {user && (
+                <li>
+                  <button onClick={() => setModal((prev) => !prev)}>
+                    <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                      <img
+                        src={user.picture}
+                        alt="User Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
         </nav>
       </header>
-      <ProfileModal modal={modal} setModal={setModal} user={user} />
+      {user &&
+        (<ProfileModal modal={modal} setModal={setModal} user={user} />)}
     </>
   );
 };

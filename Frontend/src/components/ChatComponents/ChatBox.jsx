@@ -212,7 +212,7 @@ const ChatBox = () => {
                     <span className="font-semibold">{msg.sender.name}</span>
                   )}
                   <p>{msg.content}</p>
-                  <span className="block text-sm text-gray-500 dark:text-gray-400">
+                  <span className="block text-xs text-slate-300 dark:text-gray-400">
                     {new Date(msg.createdAt).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",

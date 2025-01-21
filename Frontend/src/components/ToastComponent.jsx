@@ -23,7 +23,7 @@ const ToastComponent = ({ message, type = "info", duration = 3000, onClose }) =>
     
     return (
       <div
-        className={`flex items-center w-full max-w-xs p-4 rounded-lg shadow ${toastStyles[type]} fixed top-5 left-1/2 transform -translate-x-1/2`}
+        className={`flex items-center w-full max-w-xs p-4 rounded-lg shadow ${toastStyles[type]} fixed bottom-6 left-1/2 transform -translate-x-1/2`}
         role="alert"
       >
         <div className="flex-1 text-sm font-normal">{message}</div>

@@ -63,8 +63,8 @@ const RegisterForm = ({ onToast }) => {
         "Content-type": "application/json",
       },
     };
-    const { data } = await axios.post(
-      "http://localhost:8000/api/users",
+    const { data } = await axios.post(   
+      url + "/api/users",
       { name, email, password, phone },
       config
     );
