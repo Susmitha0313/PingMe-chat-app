@@ -32,7 +32,6 @@ const HomePage = () => {
   return (
     <>
       <ChatHeader />
-
       <div
         style={{
           backgroundImage: `url(${"src/assets/bearWallpaper.jpeg"})`,

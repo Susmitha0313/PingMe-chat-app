@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import {Route, Routes } from "react-router-dom";
-import HomePage from "./pages/Homepage";
+import HomePage from "./pages/HomePage";
 import ChatsPage from "./pages/ChatsPage";
 import socket from "../Utility/socket";
 import { ChatState } from "./context/ChatProvider";
