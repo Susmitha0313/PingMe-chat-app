@@ -5,7 +5,7 @@ import socket from "../../../Utility/socket";
 
 
 const ChatBox = () => {
-  const { user, selectedChat, notification, setNotification } = ChatState();
+  const { user, selectedChat, notification, setNotification,url } = ChatState();
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -46,7 +46,7 @@ const ChatBox = () => {
           },
         };
         const { data } = await axios.get(
-          `http://localhost:8000/api/messages/${selectedChat._id}`,
+          `${url}api/messages/${selectedChat._id}`,
           config
         );
         setMessages(data);
@@ -75,7 +75,7 @@ const ChatBox = () => {
         },
       };
       const { data } = await axios.post(
-        `http://localhost:8000/api/messages`,
+        `${url}api/messages`,
         { content: newMsg, chatId: selectedChat._id },
         config
       );

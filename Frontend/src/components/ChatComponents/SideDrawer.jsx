@@ -11,7 +11,7 @@ const SideDrawer = () => {
 
   const [sidebar, setSidebar] = useState(false);
 
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const { user, setSelectedChat, chats, setChats, url } = ChatState();
   const drawerRef = useRef(null);
   
   useEffect(() => {
@@ -24,7 +24,7 @@ const SideDrawer = () => {
           },
         };
         const { data } = await axios.get(
-          "http://localhost:8000/api/users",
+          `${url}/api/users`,
           config
         );
         setUsers(data);
@@ -70,7 +70,7 @@ const SideDrawer = () => {
         },
       };
       const { data } = await axios.post(
-        "http://localhost:8000/api/chat",
+        `${url}api/chat`,
         { userId },
         config
       );

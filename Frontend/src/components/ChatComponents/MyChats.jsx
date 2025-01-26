@@ -3,13 +3,13 @@ import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
 import socket from "../../../Utility/socket";
 
-const ENDPOINT = "http://localhost:8000";
+
 const MyChats = () => {
   const [chats, setChats] = useState([]); // Holds the chats
   const [loggedUser, setLoggerUser] = useState(); // Logged-in user
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user, selectedChat, setSelectedChat, notification } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification ,url} = ChatState();
 
   const unreadCounts = useMemo(() => {
     return notification.reduce((acc, msg) => {
@@ -29,7 +29,7 @@ const MyChats = () => {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(`${ENDPOINT}/api/chat`, config);
+        const { data } = await axios.get(`${url}/api/chat`, config);
 
         setChats(data);
         setLoggerUser(user);
