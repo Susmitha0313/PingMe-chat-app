@@ -52,8 +52,7 @@ const server = app.listen(port, () => console.log(`Server running on http://loca
 const io = new SocketServer(server, {
     pingTimeout: 60000, //its gonna wait 60 sec before it closes the connection
     cors: {
-        origin: ['http://localhost:5173', 'https://pingme-ten.vercel.app'], // Allowed origins
-        methods: ['GET', 'POST'],
+        origin: process.env.FRONTEND_URL,
         credentials: true,
     }
 })

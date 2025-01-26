@@ -7,7 +7,7 @@ import axios from "axios";
 
 const ProfileModal = ({ modal, setModal, user }) => {
   const [profilePic, setProfilePic] = useState(
-    "/src/assets/default-profile-pic.jpg"
+    "/default-profile-pic.jpg"
   );
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });

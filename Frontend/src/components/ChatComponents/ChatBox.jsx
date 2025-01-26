@@ -149,7 +149,7 @@ const ChatBox = () => {
       <div className="bg-blue-600 text-white text-lg font-semibold p-4 shadow flex items-center space-x-4">
         <div className="relative w-10 h-10 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-full">
           <img
-            src="src/assets/default-profile-pic.jpg"
+            src="/default-profile-pic.jpg"
             alt="User Profile"
             className="w-full h-full object-cover"
           />
@@ -167,7 +167,7 @@ const ChatBox = () => {
       {/* Messages Section */}
       <div
         style={{
-          backgroundImage: `url(${"/src/assets/wpapergray.png"})`,
+          backgroundImage: `url(${"/wpapergray.png"})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -195,7 +195,7 @@ const ChatBox = () => {
                   className="w-8 h-8 rounded-full"
                   src={
                     msg.sender.profilePic ||
-                    "src/assets/default-profile-pic.jpg"
+                    "/default-profile-pic.jpg"
                   }
                   alt="Sender"
                 />

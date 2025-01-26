@@ -35,7 +35,7 @@ const ChatHeader = () => {
           <div className="flex flex-wrap ml-10 items-center justify-between mx-auto max-w-screen-xl">
             {/* Logo */}
               <img
-                src="/src/assets/output-onlinepngtools.png"
+                src="/output-onlinepngtools.png"
                 className="mr-3 h-8 sm:h-9"
                 alt="PingMe Logo"
               />
