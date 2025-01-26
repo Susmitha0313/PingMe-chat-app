@@ -15,9 +15,9 @@ const port = process.env.PORT || 8000;
 const app = express();
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL,
-        methods:["GET","POST","PUT","DELETE"],
-        credentials: true,
+        origin: ['http://localhost:5173', 'https://pingme-ten.vercel.app'], // Whitelisted origins
+        methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+        credentials: true, // Allow cookies and headers
     })
 );
 
@@ -46,15 +46,14 @@ if (process.env.NODE_ENV === "production") {
 app.use(notFound);
 app.use(errorHandler); 
 
-// app.get('/', (req, res) => {
-//     res.send('Server is ready');
-// });
+
 
 const server = app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 const io = new SocketServer(server, {
     pingTimeout: 60000, //its gonna wait 60 sec before it closes the connection
     cors: {
-        origin: process.env.FRONTEND_URL,
+        origin: ['http://localhost:5173', 'https://pingme-ten.vercel.app'], // Allowed origins
+        methods: ['GET', 'POST'],
         credentials: true,
     }
 })
