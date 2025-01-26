@@ -15,7 +15,7 @@ const port = process.env.PORT || 8000;
 const app = express();
 app.use(
     cors({
-        origin: "https://ping-me-chat-ecica91f1-pingmeapp.vercel.app" || process.env.FRONTEND_URL,
+        origin: process.env.FRONTEND_URL,
         methods:["GET","POST","PUT","DELETE"],
         credentials: true,
     })
