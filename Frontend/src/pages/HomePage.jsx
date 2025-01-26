@@ -34,7 +34,7 @@ const HomePage = () => {
       <ChatHeader />
       <div
         style={{
-          backgroundImage: `url(${"src/assets/bearWallpaper.jpeg"})`,
+          backgroundImage: `url(${"/bearWallpaper.jpeg"})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

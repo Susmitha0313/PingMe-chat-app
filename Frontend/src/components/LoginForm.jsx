@@ -47,7 +47,7 @@ const LoginForm = ({ onToast }) => {
         },
       };
       const { data } = await axios.post(
-        url + "/api/users/login",
+        `${url}/api/users/login`,
         { email, password },
         config
       );

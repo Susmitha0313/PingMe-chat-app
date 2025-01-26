@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { ChatState } from "../context/ChatProvider";
 // import { useNavigate } from "react-router-dom"
 // import { uploadImage } from "../services/imageUploadService";
 
@@ -9,7 +10,6 @@ const Label = ({ children, isRequired }) => (
     {isRequired && <span className="text-red-500 ml-1">*</span>}
   </label>
 );
-   
 const RegisterForm = ({ onToast }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,6 +18,7 @@ const RegisterForm = ({ onToast }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { url } = ChatState();
   // const navigate = useNavigate()
  
   // const [profilePic, setProfilePic] = useState();
@@ -64,7 +65,7 @@ const RegisterForm = ({ onToast }) => {
       },
     };
     const { data } = await axios.post(   
-      url + "/api/users",
+      `${url}/api/users`,
       { name, email, password, phone },
       config
     );
