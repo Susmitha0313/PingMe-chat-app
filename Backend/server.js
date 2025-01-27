@@ -15,9 +15,9 @@ const port = process.env.PORT || 8000;
 const app = express();
 app.use(
     cors({
-        origin: ['http://localhost:5173', 'https://pingme-ten.vercel.app'], // Whitelisted origins
-        methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
-        credentials: true, // Allow cookies and headers
+        origin: ["http://localhost:5173", "https://pingme-ten.vercel.app"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true, // Allow cookies if needed
     })
 );
 
