@@ -13,7 +13,7 @@ export const ChatProvider = ({ children }) => {
   const url = "https://pingme-chat-app.onrender.com" 
   
 useEffect(() => {
-  const userInfo = JSON.parse(localStorage.getItem("userData"));
+  const userInfo = JSON.parse(localStorage.getItem("userData") || "null");
   setUser(userInfo);
   if (!userInfo) {
     navigate("/");

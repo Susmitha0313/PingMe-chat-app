@@ -63,7 +63,7 @@ const ProfileModal = ({ modal, setModal, user }) => {
         withCredentials: true, //new change
       };
       const response = await axios.patch(
-        `${url}api/users/:${userId}/upload-profile-pic`, // Your API endpoint
+        `${url}/api/users/:${userId}/upload-profile-pic`, // Your API endpoint
         { profilePic }, // Send the cropped Base64 image
         config
       );

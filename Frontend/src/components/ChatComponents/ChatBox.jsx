@@ -16,7 +16,7 @@ const ChatBox = () => {
   const messageEndRef = useRef(null);
   
   const scrollToBottom = () => {
-    messageEndRef.current?.scrollIntoView({ behaviour: "smooth" });
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   // Initialize socket and set up listeners
   useEffect(() => {
@@ -46,7 +46,7 @@ const ChatBox = () => {
           },
         };
         const { data } = await axios.get(
-          `${url}api/messages/${selectedChat._id}`,
+          `${url}/api/messages/${selectedChat._id}`,
           config
         );
         setMessages(data);
@@ -75,7 +75,7 @@ const ChatBox = () => {
         },
       };
       const { data } = await axios.post(
-        `${url}api/messages`,
+        `${url}/api/messages`,
         { content: newMsg, chatId: selectedChat._id },
         config
       );
