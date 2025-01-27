@@ -34,7 +34,7 @@ const { user, selectedChat } = ChatState();
               <div className="flex justify-center items-center w-full h-full text-gray-500 dark:text-gray-500">
                 <img
                   className="w-24 h-24 rounded-full opacity-20"
-                  src="/src/assets/2q6kdOqBAA2cBoLjpv6ASb6bHg8.svg"
+                  src="/2q6kdOqBAA2cBoLjpv6ASb6bHg8.svg"
                   alt="imggg"
                   // width="384"
                   // height="512"
