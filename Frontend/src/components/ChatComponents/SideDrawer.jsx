@@ -70,7 +70,7 @@ const SideDrawer = () => {
         },
       };
       const { data } = await axios.post(
-        `${url}api/chat`,
+        `${url}/api/chat`,
         { userId },
         config
       );
