@@ -6,16 +6,16 @@ import axios from "axios";
 // dotenv.config({ path: '../.env' });
 
 const ProfileModal = ({ modal, setModal, user }) => {
-  const [profilePic, setProfilePic] = useState(
-    "/default-profile-pic.jpg"
-  );
+  const [profilePic, setProfilePic] = useState("/default-profile-pic.jpg");
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState(null);
   const [showCropModal, setShowCropModal] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState(null);
+  
+  
   const handleButtonClick = () => {
     document.getElementById("fileInput").click();
   };
@@ -23,69 +23,80 @@ const ProfileModal = ({ modal, setModal, user }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-        setImage(URL.createObjectURL(file)); // Set the Base64 string as the profile picture
-        setShowCropModal(true);
+      setImage(URL.createObjectURL(file)); // Set the Base64 string as the profile picture
+      setShowCropModal(true);
     }
   };
 
-  
-  const handleCropComplete =(_, croppedArea) => {
+  const handleCropComplete = (_, croppedArea) => {
     setCroppedArea(croppedArea);
   };
 
-  
-  // const uploadToCloudinary = async (croppedImgBlob) => {
-  //   const formData = new FormData();
-  //   formData.append('file', croppedImgBlob);
-  //   // formData.append("upload_preset", process.env.uploadPresetName);
-  //   // formData.append("cloud_name", process.env.druouih3d);
-  // }
-  
-  
-  const handleCropSave = async () => {
+  const uploadToCloudinary = async (croppedImgBlob) => {
     try {
-      const croppedImage = await getCroppedImg(image, croppedArea);
-      setProfilePic(croppedImage);
-      setShowCropModal(false);
-    } catch (error) {
-      console.log("Error cropping the image:", error);
+      const imgData = new FormData();
+      imgData.append("file", croppedImgBlob);
+      imgData.append("upload_preset", "pingme");
+      imgData.append("cloud_name", "druouih3d");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/druouih3d/image/upload",
+        {
+          method: "POST",
+          body: imgData,
+        }
+      );
+      if (!res.ok) throw new Error("Failed to upload to Cloudinary.");
+      const {url} = await res.json();
+      if (!url) throw new Error("Cloudinary did not return a URL.");
+      return url;
+    } catch (err) {
+      throw err;
     }
   };
 
-  const handleUpload = async () => {
+  const handleCropSave = async () => {
     try {
-      const userId = user._id;
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-        withCredentials: true, //new change
-      };
-      const response = await axios.patch(
-        `${url}/api/users/:${userId}/upload-profile-pic`, // Your API endpoint
-        { profilePic }, // Send the cropped Base64 image
-        config
-      );
-      console.log(response.data.message);
-      console.log("Image URL: ", response.data.imageUrl);
+      setLoading(true);
+      const croppedImage = await getCroppedImg(image, croppedArea);
+      const uploadUrl = await uploadToCloudinary(croppedImage);
+      setProfilePic(uploadUrl);
+      setShowCropModal(false);
     } catch (error) {
-      console.log(
-        "Error in handleUpdatePtofilePic",
-        error.response?.data || error.message
-      );
+      setErrorMessage("Error cropping or uploading the image.");
+    } finally {
+      setLoading(false);
     }
   };
+
+
+  // const handleUpload = async () => {
+  //   try {
+  //     const userId = user._id;
+  //     const config = {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${user.token}`,
+  //       },
+  //       withCredentials: true,
+  //     };
+  //     const response = await axios.patch(
+  //       `${url}/api/users/${userId}/upload-profile-pic`,
+  //       { image },
+  //       config
+  //     );
+  //     console.log(response.data.message);
+  //     console.log("Image URL: ", response.data.imageUrl);
+  //   } catch (error) {
+  //     console.log("Upload error:", error.response?.data || error.message);
+  //   }
+  // };
 
   if (!modal) return null;
 
   return (
     <div>
-      <div
-        // id="small-modal"
-        // tabIndex="-1"
-        className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50"
-      >
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
         <div className="relative w-full max-w-md max-h-full">
           <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
@@ -164,6 +175,7 @@ const ProfileModal = ({ modal, setModal, user }) => {
                 onChange={handleFileChange}
                 className="hidden"
               />
+              {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
               <p className="text-base leading-relaxed text-grey-500 dark:text-white">
                 User: {user.name}
@@ -198,8 +210,8 @@ const ProfileModal = ({ modal, setModal, user }) => {
                     <button
                       className="px-4 py-2 bg-blue-600 text-white rounded-md"
                       onClick={async () => {
-                        await handleUpload();
                         await handleCropSave();
+                        // await handleUpload();
                       }}
                     >
                       Save

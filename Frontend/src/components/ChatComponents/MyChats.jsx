@@ -80,7 +80,7 @@ const MyChats = () => {
   };
 
   return (
-    <div className="h-screen mt-[59px]  flex flex-col bg-white dark:bg-gray-900  p-4">
+    <div className="h-screen mt-[59px] flex flex-col bg-white dark:bg-gray-900  p-4">
       {/* Header */}
       <div className="flex justify-between mt-3 items-center">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white">
@@ -129,32 +129,45 @@ const MyChats = () => {
               key={chat._id}
               onClick={() => setSelectedChat(chat)}
               className={`flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 
-              hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors duration-300 ${
-                selectedChat?._id === chat._id && "bg-gray-200 dark:bg-gray-700"
-              }`}
+      hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors duration-300 ${
+        selectedChat?._id === chat._id && "bg-gray-200 dark:bg-gray-700"
+      }`}
             >
-              <div>
-                <p className="text-md font-semibold text-gray-800 dark:text-white">
+              <div className="flex-1">
+                <p className="text-md font-semibold text-gray-800 dark:text-white truncate">
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
                     : chat.chatName}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-[250px]">
                   {chat.latestMessage?.content || "No messages yet."}
                 </p>
               </div>
-              <div className="flex item-center gap-2">
-                {unreadCounts[chat._id] > 0 && (
-                  <span className="text-xs font-bold text-white bg-red-600 rounded-full w-6 h-6 item-center justify-center ">
-                    {unreadCounts[chat._id] || 0}
-                  </span>
-                )}
-              </div>
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                {chat.updatedAt
-                  ? new Date(chat.updatedAt).toLocaleString()
-                  : "N/A"}
-              </span>
+              <div className="flex flex-col items-center gap-1">
+  {unreadCounts[chat._id] > 0 && (
+    <span className="text-xs font-bold text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center">
+      {unreadCounts[chat._id] || 0}
+    </span>
+  )}
+  <span className="text-xs text-gray-400 dark:text-gray-500">
+    {chat.updatedAt
+      ? new Date(chat.updatedAt).toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      : "N/A"}
+  </span>
+  <span className="text-xs text-gray-400 dark:text-gray-500">
+    {chat.updatedAt
+      ? new Date(chat.updatedAt).toLocaleTimeString(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : ""}
+  </span>
+</div>
+
             </li>
           ))}
         </ul>

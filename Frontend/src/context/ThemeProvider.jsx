@@ -1,18 +1,31 @@
-// import { set } from 'mongoose';
-// import React, { createContext, useContext, useState } from 'react'
-// const ThemeContext = createContext();
-// export const ThemeProvider = ({ children }) => {
-//   const [theme, setTheme] = useState("light");
-//   const toggleTheme = () => {
-//     setTheme((prev) => (prev === "light" ? "dark" : "light"));
-//   };
-  
-//   return (
-//     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-//       <div className={theme}>{children}</div>
-//     </ThemeContext.Provider>
-//   )
-// }
+import React, { createContext, useContext, useState, useEffect } from 'react'
 
-// export const useTheme = () => useContext(ThemeContext);
-      
+const ThemeContext = createContext();
+
+export const useTheme = () => useContext(ThemeContext);
+
+export const ThemeProvider = ({ children }) => {
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        return localStorage.getItem('theme') === "dark";    
+    });
+    
+    useEffect(() => {
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+        }
+    }, [isDarkMode]);
+    
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+  
+  return (
+    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}

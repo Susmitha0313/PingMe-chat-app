@@ -2,10 +2,13 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { ChatContext } from "../../context/ChatProvider";
 import ProfileModal from "./ProfileModal";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../context/ThemeProvider";
 
 const ChatHeader = () => {
   const [menu, setMenu] = useState(false);
   const [modal, setModal] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
+  
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useContext(ChatContext);
@@ -13,6 +16,7 @@ const ChatHeader = () => {
     localStorage.removeItem("userData");
     navigate("/");
   };
+  
   // Ensure hooks run before any conditional return
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -24,24 +28,21 @@ const ChatHeader = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // if (!user) {
-  //   return <div>Loading...</div>; // This can safely be here now
-  // }
 
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 bg-white dark:bg-gray-800 shadow-md">
         <nav className="border-gray-200 px-4 lg:px-6 py-2.5">
           <div className="flex flex-wrap ml-10 items-center justify-between mx-auto max-w-screen-xl">
-            {/* Logo */}
-              <img
-                src="/output-onlinepngtools.png"
-                className="mr-3 h-8 sm:h-9"
-                alt="PingMe Logo"
-              />
-              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                PingMe
-              </span>
+            <h3>Search</h3>
+            <img
+              src="/output-onlinepngtools.png"
+              className="mr-3 h-8 sm:h-9"
+              alt="PingMe Logo"
+            />
+            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+              PingMe
+            </span>
             {/* Dropdown and user profile */}
             <ul className="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse">
               <li ref={menuRef}>
@@ -88,8 +89,32 @@ const ChatHeader = () => {
                 )}
               </li>
               <li>
-                <input type="checkbox" value="" className="sr-only peer" />
-                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <div className="flex items-center">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isDarkMode}
+                      onChange={toggleTheme}
+                      className="sr-only peer"
+                    />
+                    {/* <div
+                      className="w-11 h-6 bg-gray-200 peer-focus:outline-none 
+        peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 
+        peer-checked:bg-blue-600"
+                    >
+                      <span
+                        className={`after:content-[''] after:absolute dark:after:right-[2px] after:top-[2px] after:left-[2px] 
+          after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full
+          peer-checked:after:border-white`}
+                      ></span>
+                    
+                    </div> */}
+                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                    <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                     
+                    </span>
+                  </label>
+                </div>
               </li>
               {user && (
                 <li>
@@ -108,8 +133,7 @@ const ChatHeader = () => {
           </div>
         </nav>
       </header>
-      {user &&
-        (<ProfileModal modal={modal} setModal={setModal} user={user} />)}
+      {user && <ProfileModal modal={modal} setModal={setModal} user={user} />}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState ,useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { ChatState } from "../../context/ChatProvider";
 
@@ -13,7 +13,7 @@ const SideDrawer = () => {
 
   const { user, setSelectedChat, chats, setChats, url } = ChatState();
   const drawerRef = useRef(null);
-  
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -23,10 +23,7 @@ const SideDrawer = () => {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(
-          `${url}/api/users`,
-          config
-        );
+        const { data } = await axios.get(`${url}/api/users`, config);
         setUsers(data);
         setLoading(false);
       } catch (error) {
@@ -41,19 +38,29 @@ const SideDrawer = () => {
     fetchUsers();
   }, []);
 
-
   const handleSidebar = () => setSidebar(!sidebar);
 
   const handleSearchChange = (e) => {
     setQuery(e.target.value);
   };
-  
-  const handleCloseDrawer = ()=>{
-    if (drawerRef.current && !drawerRef.current.contains(e.target)) {
-    setSidebar(false);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (drawerRef.current && !drawerRef.current.contains(e.target)) {
+        setSidebar(false);
+      }
+    };
+    if (sidebar) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  },[sidebar]);
+
   
+
   const filteredContacts = users.filter(
     (user) =>
       user.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -69,15 +76,10 @@ const SideDrawer = () => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.post(
-        `${url}/api/chat`,
-        { userId },
-        config
-      );
+      const { data } = await axios.post(`${url}/api/chat`, { userId }, config);
       if (!chats.find((c) => c._id === data._id)) {
         setChats([data, ...chats]);
       }
-      console.log("Dataaaa ", data);
       setSelectedChat(data);
       setLoading(false);
       setSidebar(false);
@@ -89,7 +91,7 @@ const SideDrawer = () => {
 
   return (
     <div className="flex">
-      <div className="fixed m-2 z-50 ">
+      <div className="fixed mt-3 z-50 ">
         <button
           onClick={handleSidebar}
           className={`text-white bg-blue-600 hover:bg-blue-700  focus:outline-none ${
@@ -99,7 +101,7 @@ const SideDrawer = () => {
             rounded-full text-sm p-2.5 inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 `}
         >
           <svg
-            className="w-6 h-6 text-white-800 dark:text-white"
+            className="w-6 mr-2  h-6 text-white-800 dark:text-white"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
@@ -107,6 +109,7 @@ const SideDrawer = () => {
           >
             <path d="M16 0H4a2 2 0 0 0-2 2v1H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v2H1a1 1 0 0 0 0 2h1v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM13.929 17H7.071a.5.5 0 0 1-.5-.5 3.935 3.935 0 1 1 7.858 0 .5.5 0 0 1-.5.5Z" />
           </svg>
+          Search Users
         </button>
       </div>
 
@@ -114,7 +117,7 @@ const SideDrawer = () => {
         {sidebar && (
           <>
             {/* Background Blur */}
-            <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"></div>
+            <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-100"></div>
 
             <div
               ref={drawerRef}
@@ -135,7 +138,7 @@ const SideDrawer = () => {
                 />
               </div>
 
-              <ul className="mt-4 overflow-y-auto thin-scrollbar space-y-3 ">
+              <ul className="mt-4 overflow-y-auto thin-scrollbar space-y-3 w-fixed ">
                 {filteredContacts.length > 0 ? (
                   filteredContacts.map((contact, index) => (
                     <li
@@ -149,11 +152,11 @@ const SideDrawer = () => {
                         alt={contact.name}
                         className="w-12 h-12 rounded-full object-cover mr-3"
                       />
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                      <div className="cont w-full overflow-hidden">
+                        <h3 className="text-md font-semibold text-gray-800 dark:text-white truncate">
                           {contact.name}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-gray-600 dark:text-gray-400 truncate">
                           {contact.email}
                         </p>
                       </div>

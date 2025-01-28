@@ -3,9 +3,9 @@ import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
 import socket from "../../../Utility/socket";
 
-
 const ChatBox = () => {
-  const { user, selectedChat, notification, setNotification,url } = ChatState();
+  const { user, selectedChat, notification, setNotification, url } =
+    ChatState();
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -14,7 +14,9 @@ const ChatBox = () => {
   const [error, setError] = useState(null);
   const [socketConnected, setSocketConnected] = useState(false);
   const messageEndRef = useRef(null);
-  
+
+  console.log(selectedChat);
+
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -92,29 +94,24 @@ const ChatBox = () => {
   // Receive real-time messages
   useEffect(() => {
     socket.on("message received", (newMsgReceived) => {
-      if (
-        !selectedChat ||
-        selectedChat._id !== newMsgReceived.chat._id
-      ) {
+      if (!selectedChat || selectedChat._id !== newMsgReceived.chat._id) {
         if (!notification.find((msg) => msg._id === newMsgReceived._id)) {
           setNotification((prev) => [...prev, newMsgReceived]);
         }
       } else {
         setMessages((prevMessages) => [...prevMessages, newMsgReceived]);
       }
-      console.log("Notifictn:"+ notification)
+      console.log("Notifictn:" + notification);
     });
     return () => {
-    socket.off("message received")
-    }
+      socket.off("message received");
+    };
   }, [selectedChat, notification, setMessages, setNotification]);
 
-
-  
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  
+
   // Typing indicator handler
   const TypingHandler = (e) => {
     setNewMsg(e.target.value);
@@ -167,16 +164,14 @@ const ChatBox = () => {
       {/* Messages Section */}
       <div
         style={{
-          backgroundImage: `url(${"/wpapergray.png"})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
+
           height: "100vh", // Full viewport height
           display: "flex",
           flexDirection: "column",
         }}
-        className=" container mx-auto flex-1 overflow-y-auto thin-scrollbar space-y-4 justify-center p-4"
-        // className="flex-1 overflow-y-auto thin-scrollbar p-4 space-y-4"
+        className={`container mx-auto flex-1 overflow-y-auto thin-scrollbar space-y-4 justify-center p-4"
+        bg-cover bg-center bg-no-repeat
+              bg-[url('/wpapergray.png')] dark:bg-[url('/3.png')]`}
       >
         {loading ? (
           <div className="text-center text-gray-500 dark:text-gray-400">
@@ -193,10 +188,7 @@ const ChatBox = () => {
               {msg.sender._id !== user._id && selectedChat.isGroupChat && (
                 <img
                   className="w-8 h-8 rounded-full"
-                  src={
-                    msg.sender.profilePic ||
-                    "/default-profile-pic.jpg"
-                  }
+                  src={msg.sender.profilePic || "/default-profile-pic.jpg"}
                   alt="Sender"
                 />
               )}
