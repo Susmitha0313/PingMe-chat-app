@@ -1,11 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../../../Utility/cropImage";
 import axios from "axios";
-// import dotenv from "dotenv";
-// dotenv.config({ path: '../.env' });
 
-const ProfileModal = ({ modal, setModal, user }) => {
+const ProfileModal = ({ modal, setModal, user, url }) => {
   const [profilePic, setProfilePic] = useState("/default-profile-pic.jpg");
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -14,8 +12,7 @@ const ProfileModal = ({ modal, setModal, user }) => {
   const [showCropModal, setShowCropModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  
-  
+
   const handleButtonClick = () => {
     document.getElementById("fileInput").click();
   };
@@ -47,50 +44,41 @@ const ProfileModal = ({ modal, setModal, user }) => {
         }
       );
       if (!res.ok) throw new Error("Failed to upload to Cloudinary.");
-      const {url} = await res.json();
+      const { url } = await res.json();
       if (!url) throw new Error("Cloudinary did not return a URL.");
       return url;
     } catch (err) {
       throw err;
     }
   };
-
+     
   const handleCropSave = async () => {
     try {
       setLoading(true);
       const croppedImage = await getCroppedImg(image, croppedArea);
       const uploadUrl = await uploadToCloudinary(croppedImage);
-      setProfilePic(uploadUrl);
+      console.log(uploadUrl);
+      const res = await axios.patch(
+        `${url}/api/users/${user._id}/upload-profile-pic`,
+        { picture: uploadUrl },
+        {
+          headers: {   
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+
+      setProfilePic(res.data.user.picture); // Access the `user` object returned by the backend
       setShowCropModal(false);
     } catch (error) {
+      console.error(error);
       setErrorMessage("Error cropping or uploading the image.");
     } finally {
       setLoading(false);
     }
   };
 
-
-  // const handleUpload = async () => {
-  //   try {
-  //     const userId = user._id;
-  //     const config = {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${user.token}`,
-  //       },
-  //       withCredentials: true,
-  //     };
-  //     const response = await axios.patch(
-  //       `${url}/api/users/${userId}/upload-profile-pic`,
-  //       { image },
-  //       config
-  //     );
-  //     console.log(response.data.message);
-  //     console.log("Image URL: ", response.data.imageUrl);
-  //   } catch (error) {
-  //     console.log("Upload error:", error.response?.data || error.message);
-  //   }
-  // };
 
   if (!modal) return null;
 
@@ -211,7 +199,6 @@ const ProfileModal = ({ modal, setModal, user }) => {
                       className="px-4 py-2 bg-blue-600 text-white rounded-md"
                       onClick={async () => {
                         await handleCropSave();
-                        // await handleUpload();
                       }}
                     >
                       Save

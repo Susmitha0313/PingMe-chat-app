@@ -66,43 +66,33 @@ const allUsers = asyncHandler(async (req, res) => {
 
 })
 
-
 const updateProfilePic = asyncHandler(async (req, res) => {
-    const { profilePic } = req.body;
-    const userId = req.params.id;
-    if (!profilePic) {
-        return res.status(400).json({ message: 'Profile picture is required.' });
-    }
-    try {
-        // Update the user's `picture` field in the database
-        // const updatedUser = await User.findByIdAndUpdate(
-        //     userId,
-        //     { picture: profilePic }, // Update with the Base64 string
-        //     { new: true } // Return the updated document
-        // );
+    const { id } = req.params;
+    const { picture } = req.body;
 
-        const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-            folder: "user-profile-pics",
-            transformation: { width: 200, height: 200, crop: "thumb" },
-            format: "jpg",
-        });
+    if (!picture) {
+        return res.status(400).json({ message: "Profile picture is required." });
+    }
+
+    try {
         const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            { picture: uploadResponse.secure_url },
+            id,
+            { picture },
             { new: true }
         );
         if (!updatedUser) {
             return res.status(404).json({ message: "User not found." });
-        } else {
-            res.status(200).json({
-                message: "Profile picture updated successfully.",
-                imageUrl: uploadResponse.secure_url, // Return the updated user object
-            });
         }
+        res.status(200).json({
+            message: "Profile picture updated successfully.",
+            user: updatedUser,
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error updating profile picture.", error });
+        console.error("Error updating profile picture:", error);
+        res.status(500).json({ message: "Error updating profile picture." });
     }
 });
+
 
 
 const logoutUser = asyncHandler(async (req, res) => {

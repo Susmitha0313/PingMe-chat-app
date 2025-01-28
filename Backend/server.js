@@ -16,7 +16,7 @@ const app = express();
 app.use(
     cors({
         origin: ["https://pingme-ten.vercel.app", "http://localhost:5173"],
-        methods: ["GET", "POST", "PUT", "DELETE"],
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true, // Allow cookies if needed
     })
 );

@@ -164,59 +164,64 @@ const ChatBox = () => {
       {/* Messages Section */}
       <div
         style={{
-
           height: "100vh", // Full viewport height
           display: "flex",
           flexDirection: "column",
         }}
-        className={`container mx-auto flex-1 overflow-y-auto thin-scrollbar space-y-4 justify-center p-4"
-        bg-cover bg-center bg-no-repeat
-              bg-[url('/wpapergray.png')] dark:bg-[url('/3.png')]`}
+        className={`container mx-auto flex-1 overflow-y-auto thin-scrollbar justify-between p-4 
+        bg-cover bg-center bg-no-repeat 
+        bg-[url('/wpapergray.png')] dark:bg-[url('/3.png')]`}
       >
+        {/* Conditional Rendering */}
         {loading ? (
-          <div className="text-center text-gray-500 dark:text-gray-400">
+          <div className="text-center text-gray-400 dark:text-white">
             Loading messages...
           </div>
-        ) : messages.length > 0 ? (
-          messages.map((msg) => (
-            <div
-              key={msg._id}
-              className={`flex ${
-                msg.sender._id === user._id ? "justify-end" : "justify-start"
-              }`}
-            >
-              {msg.sender._id !== user._id && selectedChat.isGroupChat && (
-                <img
-                  className="w-8 h-8 rounded-full"
-                  src={msg.sender.profilePic || "/default-profile-pic.jpg"}
-                  alt="Sender"
-                />
-              )}
-              <div
-                className={`p-3 rounded-lg max-w-md ${
-                  msg.sender._id === user._id
-                    ? "bg-blue-500 text-white rounded-br-none"
-                    : "bg-gray-300 text-black rounded-bl-none dark:bg-gray-800 dark:text-gray-100"
-                }`}
-              >
-                <div>
-                  {selectedChat.isGroupChat && msg.sender._id !== user._id && (
-                    <span className="font-semibold">{msg.sender.name}</span>
-                  )}
-                  <p>{msg.content}</p>
-                  <span className="block text-xs text-slate-300 dark:text-gray-400">
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))
         ) : (
-          <div className="text-center text-gray-500 dark:text-gray-400">
-            No messages yet. Start a conversation!
+          <div className="flex flex-col flex-grow justify-end space-y-4">
+            {messages.length > 0 ? (
+              messages.map((msg) => (
+                <div
+                  key={msg._id}
+                  className={`flex ${
+                    msg.sender._id === user._id
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
+                >
+                  {msg.sender._id !== user._id && selectedChat.isGroupChat && (
+                    <img
+                      className="w-8 h-8 rounded-full"
+                      src={msg.sender.profilePic || "/default-profile-pic.jpg"}
+                      alt="Sender"
+                    />
+                  )}
+                  <div
+                    className={`p-3 rounded-lg max-w-md ${
+                      msg.sender._id === user._id
+                        ? "bg-blue-500 text-white rounded-br-none"
+                        : "bg-gray-300 text-black rounded-bl-none dark:bg-gray-800 dark:text-gray-100"
+                    }`}
+                  >
+                    {selectedChat.isGroupChat &&
+                      msg.sender._id !== user._id && (
+                        <span className="font-semibold">{msg.sender.name}</span>
+                      )}
+                    <p>{msg.content}</p>
+                    <span className="block text-xs text-slate-300 dark:text-gray-400">
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-gray-400 dark:text-white">
+                No messages yet. Start a conversation!
+              </div>
+            )}
           </div>
         )}
         <div ref={messageEndRef} />

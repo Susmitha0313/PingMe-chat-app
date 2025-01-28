@@ -18,7 +18,7 @@ const { user, selectedChat } = ChatState();
         {user && <SideDrawer />}
         <div className="flex fixed w-full">
           {user && (
-            <div className="w-1/2 border-r">
+            <div className="w-1/2 ">
               <MyChats />
             </div>
           )}
@@ -31,7 +31,7 @@ const { user, selectedChat } = ChatState();
             ) : selectedChat ? (
               <ChatBox />
             ) : (
-              <div className="flex justify-center items-center w-full h-full text-gray-500 dark:text-gray-500">
+              <div className="flex justify-center items-center w-full h-full text-gray-500 bg-white dark:bg-gray-600 dark:text-white-500">
                 <img
                   className="w-24 h-24 rounded-full opacity-20"
                   src="/2q6kdOqBAA2cBoLjpv6ASb6bHg8.svg"
@@ -39,7 +39,7 @@ const { user, selectedChat } = ChatState();
                   // width="384"
                   // height="512"
                 />
-              </div>
+              </div>   
             )}
           </div>
         </div>
