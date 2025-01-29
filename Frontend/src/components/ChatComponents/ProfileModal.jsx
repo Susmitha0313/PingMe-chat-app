@@ -122,7 +122,7 @@ const ProfileModal = ({ modal, setModal, user, url }) => {
                 <a href="#">
                   <img
                     className="rounded-full "
-                    src={profilePic}
+                    src={user.picture}
                     alt="Profile"
                   />
                 </a>

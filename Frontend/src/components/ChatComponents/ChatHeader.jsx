@@ -44,7 +44,7 @@ const ChatHeader = () => {
             </span>
             {/* Dropdown and user profile */}
             <ul className="flex flex-nowrap items-center font-medium md:space-x-8 mt-0 space-x-4">
-              <li ref={menuRef}>
+             {user && <li ref={menuRef}>
                 <button
                   onClick={() => setMenu((prev) => !prev)}
                   className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -61,7 +61,7 @@ const ChatHeader = () => {
                 </button>
 
                 {/* Dropdown Menu */}
-                {user && menu && (
+                { menu && (
                   <div className="absolute z-10 mt-6 grid w-auto text-md bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
                     <div className="p-2 pb-0 text-gray-900 md:pb-3 dark:text-white">
                       <ul className="space-y-3">
@@ -74,19 +74,12 @@ const ChatHeader = () => {
                             LogOut
                           </button>
                         </li>
-                        <li>
-                          <a
-                            href="#"
-                            className="hover:text-blue-600 dark:hover:text-blue-500"
-                          >
-                            Account
-                          </a>
-                        </li>
+                      
                       </ul>
                     </div>
                   </div>
                 )}
-              </li>
+              </li>}
 
               {user && (
                 <li>

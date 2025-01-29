@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { ChatState } from "../context/ChatProvider";
-// import { useNavigate } from "react-router-dom"
-// import { uploadImage } from "../services/imageUploadService";
 
 const Label = ({ children, isRequired }) => (
-  <label className="block text-gray-700 text-sm font-bold mb-2">
+  <label className="block dark:text-white text-gray-700 text-sm font-bold mb-2">
     {children}
     {isRequired && <span className="text-red-500 ml-1">*</span>}
   </label>
@@ -19,18 +17,6 @@ const RegisterForm = ({ onToast }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { url } = ChatState();
-  // const navigate = useNavigate()
- 
-  // const [profilePic, setProfilePic] = useState();
-
-  // handleImageUpload = async (image) => {
-  //   setLoading(true);
-  //   const result = await uploadImage(image, setToast);
-  //   setLoading(false);
-  //   if (result.success) {
-  //     setProfilePic(result.url);
-  //   }
-  // };
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -86,9 +72,9 @@ const RegisterForm = ({ onToast }) => {
     setLoading(false);
   }
   };
-  return (  
+  return (
     <>
-      <form className="w-full bg-white p-6 thin-scrollbar rounded-lg shadow-md overflow-y-auto h-full">
+      <form className="w-full bg-white  dark:bg-gray-800 p-6 thin-scrollbar rounded-lg shadow-md overflow-y-auto h-full">
         <div className="fixed bottom-0 left-0 w-full flex flex-col items-center p-4 space-y-2 z-50"></div>
         <div className="mb-6" id="first-name">
           <Label isRequired={true} htmlFor="nickname">
@@ -98,7 +84,7 @@ const RegisterForm = ({ onToast }) => {
             type="text"
             placeholder="Enter your name"
             required
-            className="w-full px-3 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+            className="w-full  px-3 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500 "
             onChange={(e) => setName(e.target.value)}
           />
         </div>
@@ -182,18 +168,7 @@ const RegisterForm = ({ onToast }) => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </div>
-        {/* <div className="mb-6">
-        <Label isRequired={true} htmlFor="imageUpload">
-          Upload Image:
-        </Label>
-        <input
-          id="image-upload"
-          type="file"
-          className="w-full px-3 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
-          accept="image/*"
-          onChange={(e) => handleImageUpload(e.target.files[0])}
-        />
-      </div> */}
+   
         <button
           onClick={submitHandler}
           type="submit"
