@@ -121,7 +121,7 @@ const SideDrawer = () => {
 
             <div
               ref={drawerRef}
-              className="fixed inset-0 top-0 left-0 z-40 h-screen p-4 w-64 bg-white shadow-lg dark:bg-gray-800"
+              className="fixed inset-0 top-0 left-0 z-40 h-screen p-4 w-64 bg-white shadow-lg dark:bg-gray-800 overflow-y-auto thin-scrollbar"
               // fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50
             >
               {/* Search Input */}
