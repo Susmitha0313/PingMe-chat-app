@@ -53,6 +53,7 @@ const LoginForm = ({ onToast }) => {
       );
       localStorage.setItem("userData", JSON.stringify(data));
       setLoading(false);
+      console.log(JSON.stringify(data));
       console.log("login successful");
       navigate("/chats");
     } catch (error) {

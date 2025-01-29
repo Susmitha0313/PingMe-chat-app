@@ -34,10 +34,9 @@ const ChatHeader = () => {
       <header className="fixed top-0 left-0 w-full z-50 bg-white dark:bg-gray-800 shadow-md">
         <nav className="border-gray-200 px-4 lg:px-6 py-2.5">
           <div className="flex flex-nowrap items-center justify-between mx-auto max-w-screen-xl overflow-x-auto">
-            <h3 className="whitespace-nowrap text-lg font-medium">Search</h3>
             <img
               src="/output-onlinepngtools.png"
-              className="mr-3 h-8 sm:h-9"
+              className=" ml-[130px] h-8 sm:h-9"
               alt="PingMe Logo"
             />
             <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">

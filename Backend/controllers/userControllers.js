@@ -16,14 +16,15 @@ const registerUser = asyncHandler(async (req, res) => {
     const user = await User.create({ name, email, phone, password });
     if (user) {
         let token = generateToken(res, user._id)
-        res.status(201).json({
+        res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
             phone: user.phone,
+            picture: user.picture, 
             token,
         });
-    } else {
+    } else {   
         res.status(400);
         throw new Error('Failed to create the User');
     }
@@ -31,24 +32,30 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 const loginUser = asyncHandler(async (req, res) => {
+    console.log("login controller");
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (user && await user.matchPassword(password)) {
-        const token = generateToken(res, user._id);
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            picture: user.pic,
-            token,
-        });
-
+    if (user) {
+        console.log("User found:", user); // Debugging step
+        const isMatch = await user.matchPassword(password);
+        if (isMatch) {
+            const token = generateToken(res, user._id);
+            return res.status(200).json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                picture: user.picture || "/public/images/default-profile.jpg", // Ensure picture exists
+                token,
+            });
+        } else {
+            console.log("Password incorrect for email:", email);
+        }
     } else {
-        res.status(409); // 409 Conflict
-        console.log("Invalid credentials for email:", email);
-        throw new Error('Invalid email or password');
+        console.log("No user found with email:", email);
     }
+    res.status(409);
+    throw new Error("Invalid email or password");
 });
 
 
