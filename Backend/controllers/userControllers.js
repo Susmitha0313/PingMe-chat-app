@@ -3,7 +3,7 @@ import User from "../models/userModel.js";
 import generateToken from "../config/jwt.js";
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password, phone, pic } = req.body;
+    const { name, email, password, phone } = req.body;
     if (!name || !email || !password || !phone) {
         res.status(400);
         throw new Error("Please Enter all the fields");
@@ -13,7 +13,7 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(400);  // 409 Conflict
         throw new Error('User already exists');
     }
-    const user = await User.create({ name, email, phone, password, pic });
+    const user = await User.create({ name, email, phone, password });
     if (user) {
         let token = generateToken(res, user._id)
         res.status(201).json({
@@ -21,7 +21,6 @@ const registerUser = asyncHandler(async (req, res) => {
             name: user.name,
             email: user.email,
             phone: user.phone,
-            picture: user.pic,
             token,
         });
     } else {
