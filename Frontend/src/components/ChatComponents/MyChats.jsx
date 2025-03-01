@@ -3,13 +3,13 @@ import { ChatState } from "../../context/ChatProvider";
 import axios from "axios";
 import socket from "../../../Utility/socket";
 
-
 const MyChats = () => {
   const [chats, setChats] = useState([]); // Holds the chats
   const [loggedUser, setLoggerUser] = useState(); // Logged-in user
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user, selectedChat, setSelectedChat, notification ,url} = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, url } =
+    ChatState();
 
   const unreadCounts = useMemo(() => {
     return notification.reduce((acc, msg) => {
@@ -69,8 +69,6 @@ const MyChats = () => {
     return () => socket.off("message received", updateChatsWithNewMessage);
   }, []); // Empty dependencies
 
-  
-
   const getSender = (loggedUser, users) => {
     return users[0]._id === loggedUser._id ? users[1].name : users[0].name;
   };
@@ -80,7 +78,7 @@ const MyChats = () => {
   };
 
   return (
-    <div className="h-screen mt-[59px] flex flex-col bg-white dark:bg-gray-900  p-4">
+    <div className="h-screen mt-[59px] flex flex-col bg-white dark:bg-gray-900 overflow-y-auto  p-4">
       {/* Header */}
       <div className="flex justify-between mt-3 items-center">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white">
@@ -123,7 +121,7 @@ const MyChats = () => {
       ) : error ? (
         <div className="text-red-500 text-center">{error}</div>
       ) : chats.length > 0 ? (
-        <ul className="mt-4 overflow-y-auto thin-scrollbar space-y-3">
+        <ul className="mt-4 mb-12 overflow-y-auto thin-scrollbar space-y-3">
           {chats.map((chat) => (
             <li
               key={chat._id}
@@ -144,31 +142,31 @@ const MyChats = () => {
                 </p>
               </div>
               <div className="flex flex-col items-center gap-1">
-  {unreadCounts[chat._id] > 0 && (
-    <span className="text-xs font-bold text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center">
-      {unreadCounts[chat._id] || 0}
-    </span>
-  )}
-  <span className="text-xs text-gray-400 dark:text-gray-500">
-    {chat.updatedAt
-      ? new Date(chat.updatedAt).toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
-      : "N/A"}
-  </span>
-  <span className="text-xs text-gray-400 dark:text-gray-500">
-    {chat.updatedAt
-      ? new Date(chat.updatedAt).toLocaleTimeString(undefined, {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      : ""}
-  </span>
-</div>
-
+                {unreadCounts[chat._id] > 0 && (
+                  <span className="text-xs font-bold text-white bg-red-600 rounded-full w-6 h-6 flex items-center justify-center">
+                    {unreadCounts[chat._id] || 0}
+                  </span>
+                )}
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {chat.updatedAt
+                    ? new Date(chat.updatedAt).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                      })
+                    : "N/A"}
+                </span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {chat.updatedAt
+                    ? new Date(chat.updatedAt).toLocaleTimeString(undefined, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ""}
+                </span>
+              </div>
             </li>
+            
           ))}
         </ul>
       ) : (

@@ -1,17 +1,20 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { ChatContext } from "../../context/ChatProvider";
+import { ChatState } from "../../context/ChatProvider";
 import ProfileModal from "./ProfileModal";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeProvider";
+import axios from "axios";
 
 const ChatHeader = () => {
   const [menu, setMenu] = useState(false);
   const [modal, setModal] = useState(false);
+  const [profile, setProfile] = useState();
   const { isDarkMode, toggleTheme } = useTheme();
   
   const menuRef = useRef(null);
   const navigate = useNavigate();
-  const { user, url } = useContext(ChatContext);
+  const { user, url } = ChatState();
+  
   const logoutHandler = () => {
     localStorage.removeItem("userData");
     navigate("/");
@@ -29,6 +32,26 @@ const ChatHeader = () => {
   }, []);
 
   console.log(user);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+       if (!user) return;
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        const profileData = await axios.get(`${url}/api/users/profile`);
+        setProfile(profileData); 
+        console.log(profileData);       
+      } catch (error) {
+        console.log("profile data fetching error :",error)
+      }
+    }
+    fetchProfile();    
+  },[])
+ 
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 bg-white dark:bg-gray-800 shadow-md">
@@ -81,12 +104,12 @@ const ChatHeader = () => {
                 )}
               </li>}
 
-              {user && (
+              {profile && (
                 <li>
                   <button onClick={() => setModal((prev) => !prev)}>
                     <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                       <img
-                        src={user.picture}
+                        src={profile.picture}
                         alt="User Profile"
                         className="w-full h-full object-cover"
                       />

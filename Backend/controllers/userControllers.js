@@ -111,11 +111,14 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 const getUserProfile = asyncHandler(async (req, res) => {
-    const user = {
+    
+    console.log("profile:", req.user.name);    
+const user = {
         _id: req.user._id,
         name: req.user.name,
         email: req.user.email,
     };
+    console.log("profile:", user);    
     res.status(200).json(user);
 });
 
