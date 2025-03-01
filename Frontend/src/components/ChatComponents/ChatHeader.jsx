@@ -8,7 +8,7 @@ import axios from "axios";
 const ChatHeader = () => {
   const [menu, setMenu] = useState(false);
   const [modal, setModal] = useState(false);
-  const [profile, setProfile] = useState();
+  const [profile, setProfile] = useState("");
   const { isDarkMode, toggleTheme } = useTheme();
   
   const menuRef = useRef(null);
@@ -31,7 +31,7 @@ const ChatHeader = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  console.log(user);
+  console.log(profile);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -42,7 +42,7 @@ const ChatHeader = () => {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const profileData = await axios.get(`${url}/api/users/profile`);
+        const profileData = await axios.get(`${url}/api/users/profile`, config);
         setProfile(profileData); 
         console.log(profileData);       
       } catch (error) {
