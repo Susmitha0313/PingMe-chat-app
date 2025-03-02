@@ -4,7 +4,6 @@ import HomePage from "./pages/HomePage";
 import ChatsPage from "./pages/ChatsPage";
 import socket from "../Utility/socket";
 import { ChatState } from "./context/ChatProvider";
-
 function App() {
   const { user } = ChatState();
   useEffect(()=>{

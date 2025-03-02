@@ -10,15 +10,15 @@ export const ChatProvider = ({ children }) => {
   const [notification, setNotification] = useState([]);
   const navigate = useNavigate(); 
 
-  const url = "https://pingme-chat-app.onrender.com" || "http://localhost:8000"
-  
-useEffect(() => {
-  const userInfo = JSON.parse(localStorage.getItem("userData") || "null");
-  setUser(userInfo);
-  if (!userInfo) {
-    navigate("/");
-  }
-}, [navigate]);
+  const url =  "http://localhost:8000"
+  // "https://pingme-chat-app.onrender.com" ||
+    useEffect(() => {
+      const userInfo = JSON.parse(localStorage.getItem("userData") || "null");
+      setUser(userInfo);
+      if (!userInfo) {
+        navigate("/");
+      }
+    }, [navigate]);
 
   return (
     <ChatContext.Provider   

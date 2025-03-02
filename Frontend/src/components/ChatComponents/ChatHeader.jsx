@@ -31,8 +31,6 @@ const ChatHeader = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  console.log(profile);
-
   useEffect(() => {
     const fetchProfile = async () => {
        if (!user) return;
@@ -42,15 +40,14 @@ const ChatHeader = () => {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const profileData = await axios.get(`${url}/api/users/profile`, config);
-        setProfile(profileData); 
-        console.log(profileData);       
+        const {data} = await axios.get(`${url}/api/users/profile`, config);
+        setProfile(data);       
       } catch (error) {
         console.log("profile data fetching error :",error)
       }
     }
     fetchProfile();    
-  },[])
+  },[user])
  
   return (
     <>
@@ -106,7 +103,7 @@ const ChatHeader = () => {
 
               {profile && (
                 <li>
-                  <button onClick={() => setModal((prev) => !prev)}>
+                  <button onClick={() => setModal(true)}>
                     <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                       <img
                         src={profile.picture}
@@ -137,7 +134,7 @@ const ChatHeader = () => {
       </header>
 
       {user && (
-        <ProfileModal modal={modal} setModal={setModal} user={user} url={url} />
+        <ProfileModal modal={modal} setModal={setModal}  profile={profile} setProfile={setProfile} url={url} />
       )}
     </>
   );

@@ -3,8 +3,8 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "../../../Utility/cropImage";
 import axios from "axios";
 
-const ProfileModal = ({ modal, setModal, user, url }) => {
-  const [profilePic, setProfilePic] = useState("/default-profile-pic.jpg");
+
+const ProfileModal = ({ modal, setModal, profile, setProfile, url }) => {
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -13,6 +13,8 @@ const ProfileModal = ({ modal, setModal, user, url }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
+
+  
   const handleButtonClick = () => {
     document.getElementById("fileInput").click();
   };
@@ -25,6 +27,7 @@ const ProfileModal = ({ modal, setModal, user, url }) => {
     }
   };
 
+  
   const handleCropComplete = (_, croppedArea) => {
     setCroppedArea(croppedArea);
   };
@@ -57,19 +60,18 @@ const ProfileModal = ({ modal, setModal, user, url }) => {
       setLoading(true);
       const croppedImage = await getCroppedImg(image, croppedArea);
       const uploadUrl = await uploadToCloudinary(croppedImage);
-      console.log(uploadUrl);
+
       const res = await axios.patch(
-        `${url}/api/users/${user._id}/upload-profile-pic`,
+        `${url}/api/users/${profile._id}/upload-profile-pic`,
         { picture: uploadUrl },
         {
           headers: {   
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${profile.token}`,
           },
         }
       );
-
-      setProfilePic(res.data.user.picture); // Access the `user` object returned by the backend
+      setProfile((prevProf)=> ({...prevProf, picture: uploadUrl})); // Access the `user` object returned by the backend     
       setShowCropModal(false);
     } catch (error) {
       console.error(error);
@@ -122,7 +124,7 @@ const ProfileModal = ({ modal, setModal, user, url }) => {
                 <a href="#">
                   <img
                     className="rounded-full "
-                    src={user.picture}
+                    src={profile.picture}
                     alt="Profile"
                   />
                 </a>
@@ -164,13 +166,17 @@ const ProfileModal = ({ modal, setModal, user, url }) => {
                 className="hidden"
               />
               {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-
-              <p className="text-base leading-relaxed text-grey-500 dark:text-white">
-                User: {user.name}
-              </p>
-              <p className="text-base leading-relaxed text-gray-500 dark:text-white">
-                Email: {user.email}
-              </p>
+              <div>
+                <p className="text-xl py-3 font-semibold text-gray-700 dark:text-white flex items-center gap-3">
+                  {/* <HiUser className="text-gray-500 dark:text-gray-400 w-5 h-5" /> */}
+                  <span class="material-symbols-outlined">person</span>
+                  {profile.name}
+                </p>
+                <p className="text-md font-light text-gray-700 dark:text-white flex items-center gap-3">
+                  <span class="material-symbols-outlined">email</span>
+                  {profile.email}
+                </p>
+              </div>
             </div>
 
             {/* Crop Modal */}
@@ -221,30 +227,14 @@ const ProfileModal = ({ modal, setModal, user, url }) => {
                           </svg>
                           <span className="sr-only">Loading...</span>
                         </div>
-                      ):("Save")}
+                      ) : (
+                        "Save"
+                      )}
                     </button>
                   </div>
                 </div>
               </div>
             )}
-
-            {/* <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button
-                  data-modal-hide="small-modal"
-                  type="button"
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  I accept
-                </button>
-              <button
-                onClick={()=>{setModal(false)}}
-                  data-modal-hide="small-modal"
-                  type="button"
-                  className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                >
-                  Close
-                </button>
-              </div> */}
           </div>
         </div>
       </div>

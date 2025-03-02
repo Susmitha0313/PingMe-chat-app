@@ -75,11 +75,9 @@ const allUsers = asyncHandler(async (req, res) => {
 const updateProfilePic = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { picture } = req.body;
-
     if (!picture) {
         return res.status(400).json({ message: "Profile picture is required." });
     }
-
     try {
         const updatedUser = await User.findByIdAndUpdate(
             id,
@@ -107,18 +105,15 @@ const logoutUser = asyncHandler(async (req, res) => {
         expires: new Date(0)
     })
     res.status(200).json({ message: "User Logged Out" });
+    
+    // const token = req.header("Authorization").replace("Bearer ", "");
+    // blacklist.add(token); // Add token to blacklist
+    // res.status(200).json({ message: "Logged out successfully" });
 });
 
 
-const getUserProfile = asyncHandler(async (req, res) => {
-    
-    console.log("profile:", req.user.name);    
-const user = {
-        _id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-    };
-    console.log("profile:", user);    
+const getUserProfile = asyncHandler(async (req, res) => {   
+    const user = req.user;  
     res.status(200).json(user);
 });
 
