@@ -45,7 +45,6 @@ const allMessages = asyncHandler(async (req, res) => {
         const messages = await Message.find({ chat: chatId })
             .populate("sender", "name pic email")
             .populate("chat");
-        console.log("all messages");
         res.status(200).json(messages);
     } catch (error) {
         res.status(500).json({ message: "Failed to retrieve messages" });

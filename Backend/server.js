@@ -13,9 +13,17 @@ import { Server as SocketServer } from "socket.io";
 connectDB();
 const port = process.env.PORT || 8000;
 const app = express();
+
+const allowedOrigins = ["https://pingme-ten.vercel.app", "http://localhost:5173"];
 app.use(
     cors({
-        origin: ["https://pingme-ten.vercel.app", "http://localhost:5173"],
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, origin);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true, // Allow cookies if needed
     })
@@ -52,7 +60,13 @@ const server = app.listen(port, () => console.log(`Server running on http://loca
 const io = new SocketServer(server, {
     pingTimeout: 60000, //its gonna wait 60 sec before it closes the connection
     cors: {
-        origin: process.env.FRONTEND_URL,
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, origin);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
     }
 })

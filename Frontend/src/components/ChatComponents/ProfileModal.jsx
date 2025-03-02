@@ -168,12 +168,11 @@ const ProfileModal = ({ modal, setModal, profile, setProfile, url }) => {
               {errorMessage && <p className="text-red-500">{errorMessage}</p>}
               <div>
                 <p className="text-xl py-3 font-semibold text-gray-700 dark:text-white flex items-center gap-3">
-                  {/* <HiUser className="text-gray-500 dark:text-gray-400 w-5 h-5" /> */}
-                  <span class="material-symbols-outlined">person</span>
+                  <span className="material-symbols-outlined">person</span>
                   {profile.name}
                 </p>
                 <p className="text-md font-light text-gray-700 dark:text-white flex items-center gap-3">
-                  <span class="material-symbols-outlined">email</span>
+                  <span className="material-symbols-outlined">email</span>
                   {profile.email}
                 </p>
               </div>

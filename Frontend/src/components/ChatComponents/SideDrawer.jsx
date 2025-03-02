@@ -117,15 +117,18 @@ const SideDrawer = () => {
         {sidebar && (
           <>
             {/* Background Blur */}
-            <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-100"></div>
 
             <div
               ref={drawerRef}
-              className="fixed inset-0 top-0 left-0 z-40 h-screen p-4 w-64 bg-white shadow-lg dark:bg-gray-800 overflow-y-auto thin-scrollbar"
+              className="fixed inset-0 top-0 left-0 z-50 h-screen p-4 w-64 shadow-lg bg-gray-300 dark:bg-gray-800 overflow-y-auto thin-scrollbar"
               // fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50
             >
+              <h3 className="text-xl font-medium text-gray-800 dark:text-white truncate">
+                Search PingMe users
+              </h3>
               {/* Search Input */}
-              <div className="relative mt-[59px] pt-3">
+
+              <div className="relative mt-1 pt-3">
                 <input
                   type="text"
                   placeholder="Search contacts..."
@@ -156,9 +159,9 @@ const SideDrawer = () => {
                         <h3 className="text-md font-semibold text-gray-800 dark:text-white truncate">
                           {contact.name}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 truncate">
+                        {/* <p className="text-gray-600 dark:text-gray-400 truncate">
                           {contact.email}
-                        </p>
+                        </p> */}
                       </div>
                     </li>
                   ))

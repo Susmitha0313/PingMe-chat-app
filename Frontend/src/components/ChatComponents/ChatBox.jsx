@@ -4,8 +4,7 @@ import axios from "axios";
 import socket from "../../../Utility/socket";
 
 const ChatBox = () => {
-  const { user, selectedChat, notification, setNotification, url } =
-    ChatState();
+  const { user, selectedChat, notification, setNotification, url } = ChatState();
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -15,19 +14,24 @@ const ChatBox = () => {
   const [socketConnected, setSocketConnected] = useState(false);
   const messageEndRef = useRef(null);
 
-  console.log(selectedChat);
-
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  
   // Initialize socket and set up listeners
   useEffect(() => {
+    if (!url) return;
+
+    socket.io.uri = url;
+    socket.io.opts.withCredentials = true;
+    socket.connect(); // Connect the socket
+    
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
 
     return () => socket.disconnect(); // Cleanup on component unmount
-  }, [user]);
+  }, [url, user]);
 
   // Join the selected chat's room
   const joinRoom = (roomId) => {
@@ -146,7 +150,7 @@ const ChatBox = () => {
       <div className="bg-blue-600 mt-[59px] text-white text-lg font-semibold p-4 shadow flex items-center space-x-4">
         <div className="relative w-10 h-10 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-full">
           <img
-            src="/default-profile-pic.jpg"
+            src={selectedChat.users[0]?.picture}
             alt="User Profile"
             className="w-full h-full object-cover"
           />
@@ -219,7 +223,7 @@ const ChatBox = () => {
               ))
             ) : (
               <div className="text-center text-gray-400 dark:text-white">
-                No messages yet. Start a conversation!
+                No messages yet. Start a conversation.
               </div>
             )}
           </div>
