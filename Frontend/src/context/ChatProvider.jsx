@@ -19,7 +19,7 @@ export const ChatProvider = ({ children }) => {
       if (!userInfo) {
         navigate("/");
       }
-    }, [navigate]);
+    }, [navigate]);   
 
   return (
     <ChatContext.Provider   

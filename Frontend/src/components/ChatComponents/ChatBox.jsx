@@ -152,6 +152,10 @@ const ChatBox = () => {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") sendMessage();
   };
+  
+  const getChatPartner = (loggedUser, users) => {
+    return users.find((u) => u._id !== user._id);
+  };
 
   return (
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
@@ -160,7 +164,7 @@ const ChatBox = () => {
       <div className="bg-blue-600 mt-[59px] text-white text-lg font-semibold p-4 shadow flex items-center space-x-4">
         <div className="relative w-10 h-10 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-full">
           <img
-            src={selectedChat.users[0]?.picture}
+            src={selectedChat.users.find((u) => u._id !== user._id)?.picture}
             alt="User Profile"
             className="w-full h-full object-cover"
           />
