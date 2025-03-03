@@ -25,30 +25,37 @@ const MyChats = () => {
     setUnreadCounts(unreadCountsMemo);
   }, [unreadCountsMemo]);
 
-  // Fetch Chats
-  useEffect(() => {
-    const fetchChats = async () => {
-      if (!user) return;
-      try {
-        setLoading(true);
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        const { data } = await axios.get(`${url}/api/chat`, config);
-        setChats(data);
-        console.log(data[0].users[0].picture);        
-        setLoggerUser(user);
-      } catch (err) {
-        setError("Failed to load chats. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchChats = async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.get(`${url}/api/chat`, config);
+      setChats(data);
 
+      console.log(data[0]);
+
+      setLoggerUser(user);
+    } catch (err) {
+      setError("Failed to load chats. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
     fetchChats();
   }, [user, url]);
+
+  useEffect(() => {
+    if (selectedChat && !chats.some((chat) => chat._id === selectedChat._id)) {
+      fetchChats();
+    }
+  }, [chats, selectedChat]);
 
   // Listen for "message received"
   useEffect(() => {
@@ -107,6 +114,10 @@ const MyChats = () => {
     console.log("Create Group");
   };
 
+  const getChatPartner = (loggedUser, users) => {
+    return users.find((user) => user._id !== loggedUser._id);
+  };
+
   return (
     <div className="h-screen mt-[59px] flex flex-col bg-white dark:bg-gray-900 overflow-y-auto">
       {/* Header */}
@@ -114,7 +125,7 @@ const MyChats = () => {
         <h2 className="text-xl font-bold text-gray-800 dark:text-white">
           Chats
         </h2>
-        <button
+        {/* <button
           onClick={newGroup}
           className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
@@ -130,12 +141,12 @@ const MyChats = () => {
               clipRule="evenodd"
             />
           </svg>
-        </button>
+        </button> */}
       </div>
 
       {/* Chat List */}
       {loading ? (
-        <div className="text-center text-gray-500 bg-gray-800 p-4 dark:text-gray-400">
+        <div className="text-center text-gray-500 p-4 dark:text-gray-400">
           Loading chats...
         </div>
       ) : error ? (
@@ -154,8 +165,11 @@ const MyChats = () => {
             >
               {/* Image */}
               <img
-                src= {chat.users[0].picture || "/default-avatar.svg"}
-                alt={chat.name}
+                src={
+                  getChatPartner(loggedUser, chat.users)?.picture ||
+                  "/default-avatar.svg"
+                }
+                alt="chat user"
                 className="w-12 h-12 rounded-full object-cover border border-gray-300 dark:border-gray-600"
               />
 

@@ -4,7 +4,7 @@ import axios from "axios";
 import socket from "../../../Utility/socket";
 
 const ChatBox = () => {
-  const { user, selectedChat, notification, setNotification, url } = ChatState();
+  const { user, selectedChat, notification, setNotification,setChats, url } = ChatState();
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -96,21 +96,31 @@ const ChatBox = () => {
   };
 
   // Receive real-time messages
-  useEffect(() => {
-    socket.on("message received", (newMsgReceived) => {
-      if (!selectedChat || selectedChat._id !== newMsgReceived.chat._id) {
-        if (!notification.find((msg) => msg._id === newMsgReceived._id)) {
-          setNotification((prev) => [...prev, newMsgReceived]);
-        }
-      } else {
-        setMessages((prevMessages) => [...prevMessages, newMsgReceived]);
-      }
-      console.log("Notifictn:" + notification);
-    });
-    return () => {
-      socket.off("message received");
-    };
-  }, [selectedChat, notification, setMessages, setNotification]);
+ useEffect(() => {
+   socket.on("message received", (newMsgReceived) => {
+     // If the chat is not currently open, add a notification
+     if (!selectedChat || selectedChat._id !== newMsgReceived.chat._id) {
+       if (!notification.find((msg) => msg._id === newMsgReceived._id)) {
+         setNotification((prev) => [...prev, newMsgReceived]);
+       }
+     } else {
+       setMessages((prevMessages) => [...prevMessages, newMsgReceived]);
+     }
+     console.log("Notifictn:" + notification);
+     setChats((prevChats) => {
+       const chatExists = prevChats.some(
+         (chat) => chat._id === newMsgReceived.chat._id
+       );
+       if (!chatExists) {
+         return [...prevChats, newMsgReceived.chat];
+       }
+       return prevChats;
+     });
+   });
+   return () => {
+     socket.off("message received");
+   };
+ }, [selectedChat, notification, setMessages, setNotification, setChats]);
 
   useEffect(() => {
     scrollToBottom();
